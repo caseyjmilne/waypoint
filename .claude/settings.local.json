@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/HP/Local Sites/trackify/app/public/wp-content/plugins/arc-forge/**)",
+      "Bash(git remote add:*)",
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Read(//c/Users/HP/Local Sites/trackify/app/public/wp-content/plugins/test/**)",
+      "Bash(git commit:*)",
+      "Bash(npm install)",
+      "Bash(npm start)",
+      "Bash(npm install:*)",
+      "Read(//c/Users/HP/Local Sites/trackify/app/public/wp-content/plugins/arc-router/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

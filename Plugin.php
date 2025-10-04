@@ -32,6 +32,18 @@ class Plugin
     private function registerHooks()
     {
         add_action('init', [$this, 'registerCollections']);
+        add_action('init', [$this, 'addRewriteRules']);
+        add_filter('query_vars', [$this, 'addQueryVars']);
+        add_action('template_redirect', [$this, 'templateLoader']);
+        register_activation_hook(WAYPOINT_FILE, [$this, 'activate']);
+    }
+
+    public function activate()
+    {
+        // Register rewrite rules
+        $this->addRewriteRules();
+        // Flush rewrite rules
+        flush_rewrite_rules();
     }
 
     public function registerCollections()
@@ -43,6 +55,28 @@ class Plugin
         Collections\DocSetCollection::register();
         Collections\DocGroupCollection::register();
         Collections\DocCollection::register();
+    }
+
+    public function addRewriteRules()
+    {
+        add_rewrite_rule('^docs/?$', 'index.php?waypoint_docs=1', 'top');
+    }
+
+    public function addQueryVars($vars)
+    {
+        $vars[] = 'waypoint_docs';
+        return $vars;
+    }
+
+    public function templateLoader()
+    {
+        if (get_query_var('waypoint_docs')) {
+            $template = WAYPOINT_PATH . 'includes/templates/docs.php';
+            if (file_exists($template)) {
+                load_template($template);
+                exit;
+            }
+        }
     }
 
     public static function init()
