@@ -9,11 +9,21 @@ function Home() {
     );
 }
 
+function Test() {
+    return (
+        <div className="p-8 max-w-4xl mx-auto">
+            <h1 className="text-4xl font-bold text-green-800 mb-4">Test Page</h1>
+            <p className="text-gray-600">This is a test route at /docs/test</p>
+        </div>
+    );
+}
+
 function App() {
     return (
-        <Router>
+        <Router basename="/docs">
             <Routes>
-                <Route path="/docs" element={<Home />} />
+                <Route path="/" element={<Home />} />
+                <Route path="/test" element={<Test />} />
             </Routes>
         </Router>
     );

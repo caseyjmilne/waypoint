@@ -8,6 +8,14 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+// Enqueue the CSS before header
+wp_enqueue_style(
+    'waypoint-front-css',
+    WAYPOINT_URL . 'apps/front/build/index.css',
+    [],
+    filemtime(WAYPOINT_PATH . 'apps/front/build/index.css')
+);
+
 // Enqueue the React app before header
 wp_enqueue_script(
     'waypoint-front',

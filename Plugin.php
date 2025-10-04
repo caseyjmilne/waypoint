@@ -59,7 +59,8 @@ class Plugin
 
     public function addRewriteRules()
     {
-        add_rewrite_rule('^docs/?$', 'index.php?waypoint_docs=1', 'top');
+        // Match /docs and any sub-paths (e.g., /docs/test, /docs/getting-started)
+        add_rewrite_rule('^docs(/.*)?$', 'index.php?waypoint_docs=1', 'top');
     }
 
     public function addQueryVars($vars)
