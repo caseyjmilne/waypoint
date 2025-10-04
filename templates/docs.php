@@ -8,13 +8,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-get_header();
-?>
-
-<div id="waypoint-app"></div>
-
-<?php
-// Enqueue the React app
+// Enqueue the React app before header
 wp_enqueue_script(
     'waypoint-front',
     WAYPOINT_URL . 'apps/front/build/index.js',
@@ -29,4 +23,10 @@ wp_localize_script('waypoint-front', 'waypointData', [
     'nonce' => wp_create_nonce('wp_rest'),
 ]);
 
+get_header();
+?>
+
+<div id="waypoint-app"></div>
+
+<?php
 get_footer();

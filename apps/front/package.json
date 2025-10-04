@@ -10,11 +10,15 @@
     "lint:js": "wp-scripts lint-js"
   },
   "devDependencies": {
-    "@wordpress/scripts": "^27.0.0"
+    "@wordpress/scripts": "^27.0.0",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.14"
   },
   "dependencies": {
-    "@wordpress/element": "^5.0.0",
+    "@wordpress/api-fetch": "^6.0.0",
     "@wordpress/components": "^25.0.0",
-    "@wordpress/api-fetch": "^6.0.0"
+    "@wordpress/element": "^5.0.0",
+    "react-router-dom": "^7.9.3"
   }
 }

@@ -71,7 +71,7 @@ class Plugin
     public function templateLoader()
     {
         if (get_query_var('waypoint_docs')) {
-            $template = WAYPOINT_PATH . 'includes/templates/docs.php';
+            $template = WAYPOINT_PATH . 'templates/docs.php';
             if (file_exists($template)) {
                 load_template($template);
                 exit;
