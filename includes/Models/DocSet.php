@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class DocSet extends Model
 {
-    protected $table = 'docset';
+    protected $table = 'docsets';
 
     protected $fillable = [
         'name',

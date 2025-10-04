@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class DocGroup extends Model
 {
-    protected $table = 'docgroup';
+    protected $table = 'docgroups';
 
     protected $fillable = [
         'docset_id',

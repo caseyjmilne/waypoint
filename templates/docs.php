@@ -27,7 +27,7 @@ wp_enqueue_script(
 
 // Pass data to React app
 wp_localize_script('waypoint-front', 'waypointData', [
-    'apiUrl' => rest_url('api/'),
+    'apiUrl' => rest_url('gateway/v1'),
     'nonce' => wp_create_nonce('wp_rest'),
 ]);
 

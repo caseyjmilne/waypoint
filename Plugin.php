@@ -40,6 +40,8 @@ class Plugin
 
     public function activate()
     {
+        // Create database tables
+        Database::install();
         // Register rewrite rules
         $this->addRewriteRules();
         // Flush rewrite rules

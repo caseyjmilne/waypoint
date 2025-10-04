@@ -10,7 +10,10 @@
       "Bash(npm install)",
       "Bash(npm start)",
       "Bash(npm install:*)",
-      "Read(//c/Users/HP/Local Sites/trackify/app/public/wp-content/plugins/arc-router/**)"
+      "Read(//c/Users/HP/Local Sites/trackify/app/public/wp-content/plugins/arc-router/**)",
+      "Bash(npx tailwindcss init:*)",
+      "Bash(git rm:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []
