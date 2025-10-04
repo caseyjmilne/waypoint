@@ -31,7 +31,7 @@ class Plugin
 
     private function registerHooks()
     {
-        add_action('init', [$this, 'registerCollections']);
+        add_action('arc_gateway_loaded', [$this, 'registerCollections']);
         add_action('init', [$this, 'addRewriteRules']);
         add_filter('query_vars', [$this, 'addQueryVars']);
         add_action('template_redirect', [$this, 'templateLoader']);

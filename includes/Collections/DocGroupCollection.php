@@ -38,9 +38,9 @@ class DocGroupCollection extends \ARC\Gateway\Collection
      * @var array Model analysis configuration
      */
     protected $config = [
-        'searchable' => ['name', 'description'],
-        'filterable' => ['name', 'docset_id'],
-        'sortable' => ['name', 'created_at', 'updated_at'],
+        'searchable' => ['title', 'slug'],
+        'filterable' => ['title', 'docset_id'],
+        'sortable' => ['title', 'created_at', 'updated_at'],
         'relations' => ['docSet'],
         'hidden' => [],
         'appends' => [],

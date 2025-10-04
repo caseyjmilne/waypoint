@@ -10,8 +10,8 @@ class DocGroup extends Model
 
     protected $fillable = [
         'docset_id',
-        'name',
-        'description',
+        'title',
+        'slug',
         'doc_ids',
     ];
 
