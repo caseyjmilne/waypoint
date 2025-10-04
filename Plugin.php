@@ -26,6 +26,23 @@ class Plugin
     private function __construct()
     {
         $this->registerAutoloader();
+        $this->registerHooks();
+    }
+
+    private function registerHooks()
+    {
+        add_action('init', [$this, 'registerCollections']);
+    }
+
+    public function registerCollections()
+    {
+        if (!class_exists('\ARC\Gateway\Collection')) {
+            return;
+        }
+
+        Collections\DocSetCollection::register();
+        Collections\DocGroupCollection::register();
+        Collections\DocCollection::register();
     }
 
     public static function init()
