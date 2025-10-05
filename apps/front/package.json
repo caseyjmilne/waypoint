@@ -21,6 +21,10 @@
     "@wordpress/components": "^25.0.0",
     "@wordpress/element": "^5.0.0",
     "axios": "^1.12.2",
-    "react-router-dom": "^7.9.3"
+    "react-markdown": "^10.1.0",
+    "react-router-dom": "^7.9.3",
+    "react-syntax-highlighter": "^15.6.6",
+    "rehype-sanitize": "^6.0.0",
+    "remark-gfm": "^4.0.1"
   }
 }

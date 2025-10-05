@@ -1,12 +1,14 @@
 import { useState, useEffect } from '@wordpress/element';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import api from '../api';
+import Sidebar from './Sidebar';
 import DocGroupsList from './DocGroupsList';
 
 function DocSetPage() {
     const { docsetSlug } = useParams();
     const [docset, setDocset] = useState(null);
     const [docGroups, setDocGroups] = useState([]);
+    const [allDocs, setAllDocs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -33,6 +35,7 @@ function DocSetPage() {
 
                 if (docGroupIds.length === 0) {
                     setDocGroups([]);
+                    setAllDocs([]);
                     setError(null);
                     setLoading(false);
                     return;
@@ -47,6 +50,18 @@ function DocSetPage() {
                     .filter(group => group !== null && group !== undefined);
 
                 setDocGroups(fetchedGroups);
+
+                // Fetch all docs for the sidebar
+                const allDocIds = fetchedGroups.flatMap(g => g.doc_ids || []);
+                if (allDocIds.length > 0) {
+                    const docPromises = allDocIds.map(id => api.get(`docs/${id}`));
+                    const docResponses = await Promise.all(docPromises);
+                    const fetchedDocs = docResponses
+                        .map(response => response?.data?.data)
+                        .filter(doc => doc !== null && doc !== undefined);
+                    setAllDocs(fetchedDocs);
+                }
+
                 setError(null);
             } catch (err) {
                 console.error('Error fetching docset:', err);
@@ -64,15 +79,18 @@ function DocSetPage() {
     if (!docset) return <div className="p-8 max-w-4xl mx-auto"><p className="text-gray-500">Docset not found</p></div>;
 
     return (
-        <div className="p-8 max-w-4xl mx-auto">
-            <Link to="/" className="text-blue-600 hover:text-blue-800 mb-4 inline-block">&larr; Back to Home</Link>
-            <h1 className="text-4xl font-bold text-blue-800 mb-2">{docset.name}</h1>
-            {docset.description && <p className="text-gray-600 mb-6">{docset.description}</p>}
+        <div className="flex min-h-screen">
+            <Sidebar docset={docset} docGroups={docGroups} allDocs={allDocs} />
 
-            <div className="mt-6">
-                <h2 className="text-2xl font-semibold mb-4">Doc Groups</h2>
-                <DocGroupsList groups={docGroups} docsetSlug={docsetSlug} />
-            </div>
+            <main className="flex-1 p-8 max-w-4xl">
+                <h1 className="text-4xl font-bold text-blue-800 mb-2">{docset.name}</h1>
+                {docset.description && <p className="text-gray-600 mb-6">{docset.description}</p>}
+
+                <div className="mt-6">
+                    <h2 className="text-2xl font-semibold mb-4">Doc Groups</h2>
+                    <DocGroupsList groups={docGroups} docsetSlug={docsetSlug} />
+                </div>
+            </main>
         </div>
     );
 }

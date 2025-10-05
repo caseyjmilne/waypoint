@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/Home';
 import DocSetPage from './components/DocSetPage';
 import DocGroupPage from './components/DocGroupPage';
+import DocPage from './components/DocPage';
 
 function App() {
     return (
@@ -10,6 +11,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/:docsetSlug" element={<DocSetPage />} />
                 <Route path="/:docsetSlug/:groupSlug" element={<DocGroupPage />} />
+                <Route path="/:docsetSlug/:groupSlug/:docSlug" element={<DocPage />} />
             </Routes>
         </Router>
     );
