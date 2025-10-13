@@ -32,6 +32,7 @@ class Plugin
     private function registerHooks()
     {
         add_action('arc_gateway_loaded', [$this, 'registerCollections']);
+        add_action('arc_gateway_loaded', [$this, 'registerSchemas']);
         add_action('init', [$this, 'addRewriteRules']);
         add_filter('query_vars', [$this, 'addQueryVars']);
         add_action('template_redirect', [$this, 'templateLoader']);
@@ -57,6 +58,14 @@ class Plugin
         Collections\DocSetCollection::register();
         Collections\DocGroupCollection::register();
         Collections\DocCollection::register();
+    }
+
+    public function registerSchemas() {
+        if (!class_exists('\ARC\Blueprint\Schema')) {
+            return;
+        }
+
+        Schemas\DocSchema::register('doc');
     }
 
     public function addRewriteRules()
