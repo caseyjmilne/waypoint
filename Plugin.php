@@ -33,10 +33,18 @@ class Plugin
     {
         add_action('arc_gateway_loaded', [$this, 'registerCollections']);
         add_action('arc_gateway_loaded', [$this, 'registerSchemas']);
+        add_action('plugins_loaded', [$this, 'initAdminPage']);
         add_action('init', [$this, 'addRewriteRules']);
         add_filter('query_vars', [$this, 'addQueryVars']);
         add_action('template_redirect', [$this, 'templateLoader']);
         register_activation_hook(WAYPOINT_FILE, [$this, 'activate']);
+    }
+
+    public function initAdminPage()
+    {
+        if (is_admin()) {
+            new AdminPage();
+        }
     }
 
     public function activate()
