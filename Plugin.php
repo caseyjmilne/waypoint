@@ -73,6 +73,8 @@ class Plugin
             return;
         }
 
+        Schemas\DocSetSchema::register('doc_set');
+        Schemas\DocGroupSchema::register('doc_group');
         Schemas\DocSchema::register('doc');
     }
 

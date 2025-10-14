@@ -6,35 +6,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class DocSet extends Model
 {
-    protected $table = 'docsets';
+    protected $table = 'doc_sets';
 
     protected $fillable = [
         'name',
         'description',
-        'doc_group_ids',
-    ];
-
-    protected $casts = [
-        'doc_group_ids' => 'array',
+        'slug',
+        'icon',
     ];
 
     /**
-     * Get ordered doc groups using FIELD() ordering based on doc_group_ids array.
+     * Get doc groups for this doc set ordered by position.
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function docGroups()
     {
-        $ids = $this->doc_group_ids ?? [];
-
-        if (empty($ids)) {
-            return collect([]);
-        }
-
-        $idsString = implode(',', $ids);
-
-        return DocGroup::whereIn('id', $ids)
-            ->orderByRaw("FIELD(id, {$idsString})")
-            ->get();
+        return $this->hasMany(DocGroup::class, 'doc_set_id')->orderBy('position');
     }
 }

@@ -16,13 +16,13 @@ class DocGroupCollection extends \ARC\Gateway\Collection
      */
     protected $routes = [
         'enabled' => true,
-        'prefix' => 'docgroups',
+        'prefix' => 'doc-groups',
         'methods' => [
-            'get_many' => true,      // GET /api/docgroups
-            'get_one' => true,       // GET /api/docgroups/{id}
-            'create' => true,        // POST /api/docgroups
-            'update' => true,        // PUT/PATCH /api/docgroups/{id}
-            'delete' => true,        // DELETE /api/docgroups/{id}
+            'get_many' => true,      // GET /api/doc-groups
+            'get_one' => true,       // GET /api/doc-groups/{id}
+            'create' => true,        // POST /api/doc-groups
+            'update' => true,        // PUT/PATCH /api/doc-groups/{id}
+            'delete' => true,        // DELETE /api/doc-groups/{id}
         ],
         'middleware' => [],
         'permissions' => [
@@ -39,7 +39,7 @@ class DocGroupCollection extends \ARC\Gateway\Collection
      */
     protected $config = [
         'searchable' => ['title', 'slug'],
-        'filterable' => ['title', 'docset_id'],
+        'filterable' => ['title', 'doc_set_id'],
         'sortable' => ['title', 'created_at', 'updated_at'],
         'relations' => ['docSet'],
         'hidden' => [],

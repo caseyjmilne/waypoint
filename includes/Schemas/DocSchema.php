@@ -17,19 +17,25 @@ class DocSchema extends Schema
             'placeholder' => 'Doc title...',
         ],
         'content' => [
-            'type' => 'markdown'
+            'type' => 'markdown',
+            'label' => 'Content',
         ],
         'doc_group_id' => [
-          'type' => 'relation',
-          'label' => 'Doc Group',
-          'required' => true,
-          'relation' => [
-              'endpoint' => '/wp-json/gateway/v1/doc_groups',
-              'labelField' => 'title',
-              'valueField' => 'id',
-              'placeholder' => 'Select a doc group...',
-          ]
-      ]
-
+            'type' => 'relation',
+            'label' => 'Doc Group',
+            'required' => true,
+            'relation' => [
+                'endpoint' => '/wp-json/gateway/v1/doc-groups',
+                'labelField' => 'title',
+                'valueField' => 'id',
+                'placeholder' => 'Select a doc group...',
+            ]
+        ],
+        'position' => [
+            'type' => 'number',
+            'label' => 'Position',
+            'required' => false,
+            'default' => 0,
+        ]
     ];
 }

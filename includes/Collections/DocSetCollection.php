@@ -16,13 +16,13 @@ class DocSetCollection extends \ARC\Gateway\Collection
      */
     protected $routes = [
         'enabled' => true,
-        'prefix' => 'docsets',
+        'prefix' => 'doc-sets',
         'methods' => [
-            'get_many' => true,      // GET /api/docsets
-            'get_one' => true,       // GET /api/docsets/{id}
-            'create' => true,        // POST /api/docsets
-            'update' => true,        // PUT/PATCH /api/docsets/{id}
-            'delete' => true,        // DELETE /api/docsets/{id}
+            'get_many' => true,      // GET /api/doc-sets
+            'get_one' => true,       // GET /api/doc-sets/{id}
+            'create' => true,        // POST /api/doc-sets
+            'update' => true,        // PUT/PATCH /api/doc-sets/{id}
+            'delete' => true,        // DELETE /api/doc-sets/{id}
         ],
         'middleware' => [],
         'permissions' => [
