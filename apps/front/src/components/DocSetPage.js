@@ -30,35 +30,29 @@ function DocSetPage() {
 
                 setDocset(foundDocset);
 
-                // Fetch doc groups using doc_group_ids from the docset
-                const docGroupIds = foundDocset.doc_group_ids || [];
-
-                if (docGroupIds.length === 0) {
-                    setDocGroups([]);
-                    setAllDocs([]);
-                    setError(null);
-                    setLoading(false);
-                    return;
-                }
-
-                // Fetch each doc group by ID
-                const groupPromises = docGroupIds.map(id => api.get(`doc_groups/${id}`));
-                const groupResponses = await Promise.all(groupPromises);
-
-                const fetchedGroups = groupResponses
-                    .map(response => response?.data?.data)
-                    .filter(group => group !== null && group !== undefined);
-
+                // Fetch doc groups by filtering on doc_set_id
+                const docGroupsResponse = await api.get('doc_groups', {
+                    params: {
+                        filter: { doc_set_id: foundDocset.id },
+                        per_page: 100
+                    }
+                });
+                const fetchedGroups = docGroupsResponse?.data?.data?.items || [];
                 setDocGroups(fetchedGroups);
 
-                // Fetch all docs for the sidebar
-                const allDocIds = fetchedGroups.flatMap(g => g.doc_ids || []);
-                if (allDocIds.length > 0) {
-                    const docPromises = allDocIds.map(id => api.get(`docs/${id}`));
+                // Fetch all docs for the sidebar by filtering on doc_group_id for each group
+                if (fetchedGroups.length > 0) {
+                    const docPromises = fetchedGroups.map(group =>
+                        api.get('docs', {
+                            params: {
+                                filter: { doc_group_id: group.id },
+                                per_page: 100
+                            }
+                        })
+                    );
                     const docResponses = await Promise.all(docPromises);
                     const fetchedDocs = docResponses
-                        .map(response => response?.data?.data)
-                        .filter(doc => doc !== null && doc !== undefined);
+                        .flatMap(response => response?.data?.data?.items || []);
                     setAllDocs(fetchedDocs);
                 }
 

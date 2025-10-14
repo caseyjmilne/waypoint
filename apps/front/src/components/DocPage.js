@@ -38,23 +38,28 @@ function DocPage() {
                 setDocset(foundDocset);
 
                 // Fetch all doc groups for the docset
-                const docGroupIds = foundDocset.doc_group_ids || [];
-                const groupPromises = docGroupIds.map(id => api.get(`doc_groups/${id}`));
-                const groupResponses = await Promise.all(groupPromises);
-                const fetchedGroups = groupResponses
-                    .map(response => response?.data?.data)
-                    .filter(group => group !== null && group !== undefined);
-
+                const docGroupsResponse = await api.get('doc_groups', {
+                    params: {
+                        filter: { doc_set_id: foundDocset.id },
+                        per_page: 100
+                    }
+                });
+                const fetchedGroups = docGroupsResponse?.data?.data?.items || [];
                 setDocGroups(fetchedGroups);
 
-                // Fetch all docs
-                const allDocIds = fetchedGroups.flatMap(g => g.doc_ids || []);
-                if (allDocIds.length > 0) {
-                    const docPromises = allDocIds.map(id => api.get(`docs/${id}`));
+                // Fetch all docs for all groups
+                if (fetchedGroups.length > 0) {
+                    const docPromises = fetchedGroups.map(group =>
+                        api.get('docs', {
+                            params: {
+                                filter: { doc_group_id: group.id },
+                                per_page: 100
+                            }
+                        })
+                    );
                     const docResponses = await Promise.all(docPromises);
                     const fetchedDocs = docResponses
-                        .map(response => response?.data?.data)
-                        .filter(doc => doc !== null && doc !== undefined);
+                        .flatMap(response => response?.data?.data?.items || []);
                     setAllDocs(fetchedDocs);
                 }
 

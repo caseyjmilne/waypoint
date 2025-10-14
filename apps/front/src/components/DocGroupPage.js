@@ -33,13 +33,13 @@ function DocGroupPage() {
                 setDocset(foundDocset);
 
                 // Fetch all doc groups for the docset
-                const docGroupIds = foundDocset.doc_group_ids || [];
-                const groupPromises = docGroupIds.map(id => api.get(`doc_groups/${id}`));
-                const groupResponses = await Promise.all(groupPromises);
-                const fetchedGroups = groupResponses
-                    .map(response => response?.data?.data)
-                    .filter(group => group !== null && group !== undefined);
-
+                const docGroupsResponse = await api.get('doc_groups', {
+                    params: {
+                        filter: { doc_set_id: foundDocset.id },
+                        per_page: 100
+                    }
+                });
+                const fetchedGroups = docGroupsResponse?.data?.data?.items || [];
                 setDocGroups(fetchedGroups);
 
                 // Find the current group
@@ -53,21 +53,23 @@ function DocGroupPage() {
 
                 setDocGroup(group);
 
-                // Fetch all docs for the sidebar
-                const allDocIds = fetchedGroups.flatMap(g => g.doc_ids || []);
-                if (allDocIds.length > 0) {
-                    const docPromises = allDocIds.map(id => api.get(`docs/${id}`));
+                // Fetch all docs for the sidebar by filtering on doc_group_id for each group
+                if (fetchedGroups.length > 0) {
+                    const docPromises = fetchedGroups.map(g =>
+                        api.get('docs', {
+                            params: {
+                                filter: { doc_group_id: g.id },
+                                per_page: 100
+                            }
+                        })
+                    );
                     const docResponses = await Promise.all(docPromises);
                     const fetchedDocs = docResponses
-                        .map(response => response?.data?.data)
-                        .filter(doc => doc !== null && doc !== undefined);
+                        .flatMap(response => response?.data?.data?.items || []);
                     setAllDocs(fetchedDocs);
 
                     // Set current group's docs
-                    const groupDocIds = group.doc_ids || [];
-                    const currentDocs = groupDocIds
-                        .map(id => fetchedDocs.find(d => d.id === id))
-                        .filter(doc => doc !== undefined);
+                    const currentDocs = fetchedDocs.filter(doc => doc.doc_group_id === group.id);
                     setDocs(currentDocs);
                 }
 
