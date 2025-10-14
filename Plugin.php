@@ -43,7 +43,7 @@ class Plugin
     public function initAdminPage()
     {
         if (is_admin()) {
-            new AdminPage();
+            new Admin\Pages();
         }
     }
 
