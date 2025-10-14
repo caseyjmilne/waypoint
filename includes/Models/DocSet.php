@@ -12,7 +12,6 @@ class DocSet extends Model
         'name',
         'description',
         'slug',
-        'icon',
     ];
 
     /**
