@@ -23,8 +23,8 @@ const dataStore = {
         try {
             // Fetch all data in parallel
             const [docSetsResponse, docGroupsResponse, docsResponse] = await Promise.all([
-                api.get('doc_sets', { params: { per_page: 100 } }),
-                api.get('doc_groups', { params: { per_page: 100 } }),
+                api.get('doc-sets', { params: { per_page: 100 } }),
+                api.get('doc-groups', { params: { per_page: 100 } }),
                 api.get('docs', { params: { per_page: 100 } })
             ]);
 

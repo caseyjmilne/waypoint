@@ -650,35 +650,20 @@
   .h-8 {
     height: calc(var(--spacing) * 8);
   }
-  .h-12 {
-    height: calc(var(--spacing) * 12);
-  }
   .min-h-screen {
     min-height: 100vh;
   }
   .w-1\/2 {
     width: calc(1/2 * 100%);
   }
-  .w-2\/3 {
-    width: calc(2/3 * 100%);
-  }
   .w-3\/4 {
     width: calc(3/4 * 100%);
-  }
-  .w-4\/5 {
-    width: calc(4/5 * 100%);
   }
   .w-5\/6 {
     width: calc(5/6 * 100%);
   }
-  .w-11\/12 {
-    width: calc(11/12 * 100%);
-  }
   .w-64 {
     width: calc(var(--spacing) * 64);
-  }
-  .w-full {
-    width: 100%;
   }
   .max-w-4xl {
     max-width: var(--container-4xl);
