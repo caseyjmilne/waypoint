@@ -25,7 +25,7 @@ class DocSchema extends Schema
             'label' => 'Doc Group',
             'required' => true,
             'relation' => [
-                'endpoint' => '/wp-json/gateway/v1/doc_groups',
+                'endpoint' => '/wp-json/gateway/v1/doc-groups',
                 'labelField' => 'title',
                 'valueField' => 'id',
                 'placeholder' => 'Select a doc group...',
