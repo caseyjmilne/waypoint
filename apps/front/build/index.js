@@ -82150,13 +82150,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/development/chunk-NISHYRIK.mjs");
-/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../api */ "./src/api.js");
-/* harmony import */ var _Sidebar__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Sidebar */ "./src/components/Sidebar.js");
-/* harmony import */ var _DocsList__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./DocsList */ "./src/components/DocsList.js");
-
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/development/chunk-NISHYRIK.mjs");
+/* harmony import */ var _store_dataStore__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../store/dataStore */ "./src/store/dataStore.js");
+/* harmony import */ var _Sidebar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Sidebar */ "./src/components/Sidebar.js");
+/* harmony import */ var _DocsList__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./DocsList */ "./src/components/DocsList.js");
 
 
 
@@ -82166,79 +82163,12 @@ function DocGroupPage() {
   const {
     docsetSlug,
     groupSlug
-  } = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_2__.useParams)();
-  const [docset, setDocset] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
-  const [docGroup, setDocGroup] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
-  const [docGroups, setDocGroups] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
-  const [docs, setDocs] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
-  const [allDocs, setAllDocs] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
-  const [loading, setLoading] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
-  const [error, setError] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
-  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    const fetchDocGroup = async () => {
-      try {
-        setLoading(true);
-
-        // Fetch docset
-        const docsetsResponse = await _api__WEBPACK_IMPORTED_MODULE_3__["default"].get('doc_sets');
-        const docsets = docsetsResponse?.data?.data?.items || [];
-        const foundDocset = docsets.find(d => d.slug === docsetSlug);
-        if (!foundDocset) {
-          setError('Docset not found');
-          setLoading(false);
-          return;
-        }
-        setDocset(foundDocset);
-
-        // Fetch all doc groups for the docset
-        const docGroupsResponse = await _api__WEBPACK_IMPORTED_MODULE_3__["default"].get('doc_groups', {
-          params: {
-            filter: {
-              doc_set_id: foundDocset.id
-            },
-            per_page: 100
-          }
-        });
-        const fetchedGroups = docGroupsResponse?.data?.data?.items || [];
-        setDocGroups(fetchedGroups);
-
-        // Find the current group
-        const group = fetchedGroups.find(g => g.slug === groupSlug);
-        if (!group) {
-          setError('Doc group not found');
-          setLoading(false);
-          return;
-        }
-        setDocGroup(group);
-
-        // Fetch all docs for the sidebar by filtering on doc_group_id for each group
-        if (fetchedGroups.length > 0) {
-          const docPromises = fetchedGroups.map(g => _api__WEBPACK_IMPORTED_MODULE_3__["default"].get('docs', {
-            params: {
-              filter: {
-                doc_group_id: g.id
-              },
-              per_page: 100
-            }
-          }));
-          const docResponses = await Promise.all(docPromises);
-          const fetchedDocs = docResponses.flatMap(response => response?.data?.data?.items || []);
-          setAllDocs(fetchedDocs);
-
-          // Set current group's docs
-          const currentDocs = fetchedDocs.filter(doc => doc.doc_group_id === group.id);
-          setDocs(currentDocs);
-        }
-        setError(null);
-      } catch (err) {
-        console.error('Error fetching doc group:', err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDocGroup();
-  }, [docsetSlug, groupSlug]);
+  } = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_1__.useParams)();
+  const {
+    data,
+    loading,
+    error
+  } = (0,_store_dataStore__WEBPACK_IMPORTED_MODULE_2__.useDataStore)();
   if (loading) return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "p-8 max-w-4xl mx-auto"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
@@ -82249,14 +82179,29 @@ function DocGroupPage() {
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-red-600"
   }, "Error: ", error));
-  if (!docGroup || !docset) return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  if (!data) return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "p-8 max-w-4xl mx-auto"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+    className: "text-gray-500"
+  }, "No data available"));
+  const docset = data.getDocSetBySlug(docsetSlug);
+  if (!docset) return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "p-8 max-w-4xl mx-auto"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+    className: "text-gray-500"
+  }, "Docset not found"));
+  const docGroups = data.getDocGroupsByDocSetId(docset.id);
+  const docGroup = data.getDocGroupBySlugAndDocSetId(groupSlug, docset.id);
+  if (!docGroup) return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "p-8 max-w-4xl mx-auto"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-gray-500"
   }, "Doc group not found"));
+  const docs = data.getDocsByDocGroupId(docGroup.id);
+  const allDocs = docGroups.flatMap(group => data.getDocsByDocGroupId(group.id));
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "flex min-h-screen"
-  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_Sidebar__WEBPACK_IMPORTED_MODULE_4__["default"], {
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_Sidebar__WEBPACK_IMPORTED_MODULE_3__["default"], {
     docset: docset,
     docGroups: docGroups,
     allDocs: allDocs
@@ -82268,7 +82213,7 @@ function DocGroupPage() {
     className: "mt-6"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", {
     className: "text-2xl font-semibold mb-4"
-  }, "Docs"), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_DocsList__WEBPACK_IMPORTED_MODULE_5__["default"], {
+  }, "Docs"), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_DocsList__WEBPACK_IMPORTED_MODULE_4__["default"], {
     docs: docs,
     docsetSlug: docsetSlug,
     groupSlug: groupSlug
@@ -82331,17 +82276,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/development/chunk-NISHYRIK.mjs");
-/* harmony import */ var react_markdown__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-markdown */ "./node_modules/react-markdown/lib/index.js");
-/* harmony import */ var remark_gfm__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! remark-gfm */ "./node_modules/remark-gfm/lib/index.js");
-/* harmony import */ var rehype_sanitize__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! rehype-sanitize */ "./node_modules/rehype-sanitize/lib/index.js");
-/* harmony import */ var react_syntax_highlighter__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react-syntax-highlighter */ "./node_modules/react-syntax-highlighter/dist/esm/prism.js");
-/* harmony import */ var react_syntax_highlighter_dist_esm_styles_prism__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react-syntax-highlighter/dist/esm/styles/prism */ "./node_modules/react-syntax-highlighter/dist/esm/styles/prism/one-dark.js");
-/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../api */ "./src/api.js");
-/* harmony import */ var _Sidebar__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Sidebar */ "./src/components/Sidebar.js");
-
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/development/chunk-NISHYRIK.mjs");
+/* harmony import */ var react_markdown__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-markdown */ "./node_modules/react-markdown/lib/index.js");
+/* harmony import */ var remark_gfm__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! remark-gfm */ "./node_modules/remark-gfm/lib/index.js");
+/* harmony import */ var rehype_sanitize__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! rehype-sanitize */ "./node_modules/rehype-sanitize/lib/index.js");
+/* harmony import */ var react_syntax_highlighter__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-syntax-highlighter */ "./node_modules/react-syntax-highlighter/dist/esm/prism.js");
+/* harmony import */ var react_syntax_highlighter_dist_esm_styles_prism__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react-syntax-highlighter/dist/esm/styles/prism */ "./node_modules/react-syntax-highlighter/dist/esm/styles/prism/one-dark.js");
+/* harmony import */ var _store_dataStore__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../store/dataStore */ "./src/store/dataStore.js");
+/* harmony import */ var _Sidebar__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Sidebar */ "./src/components/Sidebar.js");
 
 
 
@@ -82356,84 +82298,13 @@ function DocPage() {
     docsetSlug,
     groupSlug,
     docSlug
-  } = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_2__.useParams)();
-  const [docset, setDocset] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
-  const [docGroups, setDocGroups] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
-  const [doc, setDoc] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
-  const [allDocs, setAllDocs] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
-  const [sidebarLoading, setSidebarLoading] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
-  const [docLoading, setDocLoading] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
-  const [error, setError] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
-
-  // Load sidebar data once
-  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    const fetchSidebarData = async () => {
-      try {
-        setSidebarLoading(true);
-
-        // Fetch docset
-        const docsetsResponse = await _api__WEBPACK_IMPORTED_MODULE_8__["default"].get('doc_sets');
-        const docsets = docsetsResponse?.data?.data?.items || [];
-        const foundDocset = docsets.find(d => d.slug === docsetSlug);
-        if (!foundDocset) {
-          setError('Docset not found');
-          setSidebarLoading(false);
-          return;
-        }
-        setDocset(foundDocset);
-
-        // Fetch all doc groups for the docset
-        const docGroupsResponse = await _api__WEBPACK_IMPORTED_MODULE_8__["default"].get('doc_groups', {
-          params: {
-            filter: {
-              doc_set_id: foundDocset.id
-            },
-            per_page: 100
-          }
-        });
-        const fetchedGroups = docGroupsResponse?.data?.data?.items || [];
-        setDocGroups(fetchedGroups);
-
-        // Fetch all docs for all groups
-        if (fetchedGroups.length > 0) {
-          const docPromises = fetchedGroups.map(group => _api__WEBPACK_IMPORTED_MODULE_8__["default"].get('docs', {
-            params: {
-              filter: {
-                doc_group_id: group.id
-              },
-              per_page: 100
-            }
-          }));
-          const docResponses = await Promise.all(docPromises);
-          const fetchedDocs = docResponses.flatMap(response => response?.data?.data?.items || []);
-          setAllDocs(fetchedDocs);
-        }
-        setError(null);
-      } catch (err) {
-        console.error('Error fetching sidebar data:', err);
-        setError(err.message);
-      } finally {
-        setSidebarLoading(false);
-      }
-    };
-    fetchSidebarData();
-  }, [docsetSlug]);
-
-  // Load individual doc when slug changes
-  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    if (allDocs.length === 0) return;
-    setDocLoading(true);
-    const foundDoc = allDocs.find(d => d.slug === docSlug);
-    if (!foundDoc) {
-      setError('Doc not found');
-      setDocLoading(false);
-      return;
-    }
-    setDoc(foundDoc);
-    setError(null);
-    setDocLoading(false);
-  }, [docSlug, allDocs]);
-  if (sidebarLoading) {
+  } = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_1__.useParams)();
+  const {
+    data,
+    loading,
+    error
+  } = (0,_store_dataStore__WEBPACK_IMPORTED_MODULE_7__.useDataStore)();
+  if (loading) {
     return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "p-8 max-w-4xl mx-auto"
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -82451,42 +82322,39 @@ function DocPage() {
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-red-600"
   }, "Error: ", error));
+  if (!data) return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "p-8 max-w-4xl mx-auto"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+    className: "text-gray-500"
+  }, "No data available"));
+  const docset = data.getDocSetBySlug(docsetSlug);
   if (!docset) return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "p-8 max-w-4xl mx-auto"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-gray-500"
   }, "Docset not found"));
+  const docGroups = data.getDocGroupsByDocSetId(docset.id);
+  const docGroup = data.getDocGroupBySlugAndDocSetId(groupSlug, docset.id);
+  if (!docGroup) return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "p-8 max-w-4xl mx-auto"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+    className: "text-gray-500"
+  }, "Doc group not found"));
+  const allDocs = docGroups.flatMap(group => data.getDocsByDocGroupId(group.id));
+  const doc = data.getDocBySlugAndDocGroupId(docSlug, docGroup.id);
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "flex min-h-screen"
-  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_Sidebar__WEBPACK_IMPORTED_MODULE_9__["default"], {
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_Sidebar__WEBPACK_IMPORTED_MODULE_8__["default"], {
     docset: docset,
     docGroups: docGroups,
     allDocs: allDocs
   }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("main", {
     className: "flex-1 p-8 max-w-4xl"
-  }, docLoading ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "animate-pulse space-y-4"
-  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "h-12 bg-gray-200 rounded w-3/4"
-  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "h-4 bg-gray-200 rounded w-full"
-  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "h-4 bg-gray-200 rounded w-5/6"
-  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "h-4 bg-gray-200 rounded w-4/5"
-  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "h-8 bg-gray-200 rounded w-2/3 mt-8"
-  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "h-4 bg-gray-200 rounded w-full"
-  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "h-4 bg-gray-200 rounded w-11/12"
-  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "h-4 bg-gray-200 rounded w-4/5"
-  })) : doc?.content ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, doc?.content ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "prose max-w-none"
-  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_markdown__WEBPACK_IMPORTED_MODULE_3__.Markdown, {
-    remarkPlugins: [remark_gfm__WEBPACK_IMPORTED_MODULE_4__["default"]],
-    rehypePlugins: [rehype_sanitize__WEBPACK_IMPORTED_MODULE_5__["default"]],
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_markdown__WEBPACK_IMPORTED_MODULE_2__.Markdown, {
+    remarkPlugins: [remark_gfm__WEBPACK_IMPORTED_MODULE_3__["default"]],
+    rehypePlugins: [rehype_sanitize__WEBPACK_IMPORTED_MODULE_4__["default"]],
     components: {
       code({
         node,
@@ -82496,8 +82364,8 @@ function DocPage() {
         ...props
       }) {
         const match = /language-(\w+)/.exec(className || '');
-        return !inline && match ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_syntax_highlighter__WEBPACK_IMPORTED_MODULE_6__["default"], {
-          style: react_syntax_highlighter_dist_esm_styles_prism__WEBPACK_IMPORTED_MODULE_7__["default"],
+        return !inline && match ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_syntax_highlighter__WEBPACK_IMPORTED_MODULE_5__["default"], {
+          style: react_syntax_highlighter_dist_esm_styles_prism__WEBPACK_IMPORTED_MODULE_6__["default"],
           language: match[1],
           PreTag: "div",
           ...props
@@ -82528,13 +82396,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/development/chunk-NISHYRIK.mjs");
-/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../api */ "./src/api.js");
-/* harmony import */ var _Sidebar__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Sidebar */ "./src/components/Sidebar.js");
-/* harmony import */ var _DocGroupsList__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./DocGroupsList */ "./src/components/DocGroupsList.js");
-
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/development/chunk-NISHYRIK.mjs");
+/* harmony import */ var _store_dataStore__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../store/dataStore */ "./src/store/dataStore.js");
+/* harmony import */ var _Sidebar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Sidebar */ "./src/components/Sidebar.js");
+/* harmony import */ var _DocGroupsList__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./DocGroupsList */ "./src/components/DocGroupsList.js");
 
 
 
@@ -82543,64 +82408,12 @@ __webpack_require__.r(__webpack_exports__);
 function DocSetPage() {
   const {
     docsetSlug
-  } = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_2__.useParams)();
-  const [docset, setDocset] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
-  const [docGroups, setDocGroups] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
-  const [allDocs, setAllDocs] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
-  const [loading, setLoading] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
-  const [error, setError] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
-  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    const fetchDocSet = async () => {
-      try {
-        setLoading(true);
-
-        // Fetch docsets and find the one with matching slug
-        const docsetsResponse = await _api__WEBPACK_IMPORTED_MODULE_3__["default"].get('doc_sets');
-        const docsets = docsetsResponse?.data?.data?.items || [];
-        const foundDocset = docsets.find(d => d.slug === docsetSlug);
-        if (!foundDocset) {
-          setError('Docset not found');
-          setLoading(false);
-          return;
-        }
-        setDocset(foundDocset);
-
-        // Fetch doc groups by filtering on doc_set_id
-        const docGroupsResponse = await _api__WEBPACK_IMPORTED_MODULE_3__["default"].get('doc_groups', {
-          params: {
-            filter: {
-              doc_set_id: foundDocset.id
-            },
-            per_page: 100
-          }
-        });
-        const fetchedGroups = docGroupsResponse?.data?.data?.items || [];
-        setDocGroups(fetchedGroups);
-
-        // Fetch all docs for the sidebar by filtering on doc_group_id for each group
-        if (fetchedGroups.length > 0) {
-          const docPromises = fetchedGroups.map(group => _api__WEBPACK_IMPORTED_MODULE_3__["default"].get('docs', {
-            params: {
-              filter: {
-                doc_group_id: group.id
-              },
-              per_page: 100
-            }
-          }));
-          const docResponses = await Promise.all(docPromises);
-          const fetchedDocs = docResponses.flatMap(response => response?.data?.data?.items || []);
-          setAllDocs(fetchedDocs);
-        }
-        setError(null);
-      } catch (err) {
-        console.error('Error fetching docset:', err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDocSet();
-  }, [docsetSlug]);
+  } = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_1__.useParams)();
+  const {
+    data,
+    loading,
+    error
+  } = (0,_store_dataStore__WEBPACK_IMPORTED_MODULE_2__.useDataStore)();
   if (loading) return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "p-8 max-w-4xl mx-auto"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
@@ -82611,14 +82424,22 @@ function DocSetPage() {
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-red-600"
   }, "Error: ", error));
+  if (!data) return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "p-8 max-w-4xl mx-auto"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+    className: "text-gray-500"
+  }, "No data available"));
+  const docset = data.getDocSetBySlug(docsetSlug);
   if (!docset) return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "p-8 max-w-4xl mx-auto"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-gray-500"
   }, "Docset not found"));
+  const docGroups = data.getDocGroupsByDocSetId(docset.id);
+  const allDocs = docGroups.flatMap(group => data.getDocsByDocGroupId(group.id));
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "flex min-h-screen"
-  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_Sidebar__WEBPACK_IMPORTED_MODULE_4__["default"], {
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_Sidebar__WEBPACK_IMPORTED_MODULE_3__["default"], {
     docset: docset,
     docGroups: docGroups,
     allDocs: allDocs
@@ -82632,7 +82453,7 @@ function DocSetPage() {
     className: "mt-6"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", {
     className: "text-2xl font-semibold mb-4"
-  }, "Doc Groups"), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_DocGroupsList__WEBPACK_IMPORTED_MODULE_5__["default"], {
+  }, "Doc Groups"), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_DocGroupsList__WEBPACK_IMPORTED_MODULE_4__["default"], {
     groups: docGroups,
     docsetSlug: docsetSlug
   }))));
@@ -82738,35 +82559,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../api */ "./src/api.js");
-/* harmony import */ var _DocSetsList__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./DocSetsList */ "./src/components/DocSetsList.js");
-
+/* harmony import */ var _store_dataStore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../store/dataStore */ "./src/store/dataStore.js");
+/* harmony import */ var _DocSetsList__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DocSetsList */ "./src/components/DocSetsList.js");
 
 
 
 function Home() {
-  const [docsets, setDocsets] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
-  const [loading, setLoading] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
-  const [error, setError] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
-  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const docsetsResponse = await _api__WEBPACK_IMPORTED_MODULE_2__["default"].get('doc_sets');
-        const docsetsItems = docsetsResponse?.data?.data?.items;
-        setDocsets(Array.isArray(docsetsItems) ? docsetsItems : []);
-        setError(null);
-      } catch (err) {
-        console.error('Error fetching data:', err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+  const {
+    data,
+    loading,
+    error
+  } = (0,_store_dataStore__WEBPACK_IMPORTED_MODULE_1__.useDataStore)();
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "p-8 max-w-4xl mx-auto"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h1", {
@@ -82777,12 +82580,12 @@ function Home() {
     className: "text-gray-500"
   }, "Loading..."), error && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-red-600"
-  }, "Error: ", error), !loading && !error && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, "Error: ", error), !loading && !error && data && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "mt-6"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", {
     className: "text-2xl font-semibold mb-4"
-  }, "Documentation Sets"), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_DocSetsList__WEBPACK_IMPORTED_MODULE_3__["default"], {
-    docsets: docsets
+  }, "Documentation Sets"), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_DocSetsList__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    docsets: data.docSets
   }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "mt-12 pt-8 border-t border-gray-200 text-center"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
@@ -82865,6 +82668,148 @@ function Sidebar({
 __webpack_require__.r(__webpack_exports__);
 // extracted by mini-css-extract-plugin
 
+
+/***/ }),
+
+/***/ "./src/store/dataStore.js":
+/*!********************************!*\
+  !*** ./src/store/dataStore.js ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   useDataStore: () => (/* binding */ useDataStore)
+/* harmony export */ });
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../api */ "./src/api.js");
+
+
+let cachedData = null;
+let loading = false;
+let listeners = [];
+const dataStore = {
+  /**
+   * Fetch all data from the API and organize it
+   */
+  async fetchAll() {
+    if (cachedData) return cachedData;
+    if (loading) {
+      // Wait for existing fetch to complete
+      return new Promise(resolve => {
+        listeners.push(resolve);
+      });
+    }
+    loading = true;
+    try {
+      // Fetch all data in parallel
+      const [docSetsResponse, docGroupsResponse, docsResponse] = await Promise.all([_api__WEBPACK_IMPORTED_MODULE_1__["default"].get('doc_sets', {
+        params: {
+          per_page: 100
+        }
+      }), _api__WEBPACK_IMPORTED_MODULE_1__["default"].get('doc_groups', {
+        params: {
+          per_page: 100
+        }
+      }), _api__WEBPACK_IMPORTED_MODULE_1__["default"].get('docs', {
+        params: {
+          per_page: 100
+        }
+      })]);
+      const docSets = docSetsResponse?.data?.data?.items || [];
+      const docGroups = docGroupsResponse?.data?.data?.items || [];
+      const docs = docsResponse?.data?.data?.items || [];
+
+      // Organize data by relationships
+      cachedData = {
+        docSets,
+        docGroups,
+        docs,
+        // Helper methods to get related data
+        getDocSetBySlug(slug) {
+          return docSets.find(ds => ds.slug === slug);
+        },
+        getDocSetById(id) {
+          return docSets.find(ds => ds.id === id);
+        },
+        getDocGroupsByDocSetId(docSetId) {
+          return docGroups.filter(dg => dg.doc_set_id === docSetId).sort((a, b) => (a.position || 0) - (b.position || 0));
+        },
+        getDocGroupBySlug(slug) {
+          return docGroups.find(dg => dg.slug === slug);
+        },
+        getDocGroupBySlugAndDocSetId(slug, docSetId) {
+          return docGroups.find(dg => dg.slug === slug && dg.doc_set_id === docSetId);
+        },
+        getDocGroupById(id) {
+          return docGroups.find(dg => dg.id === id);
+        },
+        getDocsByDocGroupId(docGroupId) {
+          return docs.filter(d => d.doc_group_id === docGroupId).sort((a, b) => (a.position || 0) - (b.position || 0));
+        },
+        getDocBySlug(slug) {
+          return docs.find(d => d.slug === slug);
+        },
+        getDocBySlugAndDocGroupId(slug, docGroupId) {
+          return docs.find(d => d.slug === slug && d.doc_group_id === docGroupId);
+        },
+        getDocById(id) {
+          return docs.find(d => d.id === id);
+        }
+      };
+
+      // Notify all waiting listeners
+      listeners.forEach(resolve => resolve(cachedData));
+      listeners = [];
+      return cachedData;
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      throw error;
+    } finally {
+      loading = false;
+    }
+  },
+  /**
+   * Clear the cache (useful for refresh)
+   */
+  clearCache() {
+    cachedData = null;
+  }
+};
+
+/**
+ * React hook to use the data store
+ */
+function useDataStore() {
+  const [data, setData] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(cachedData);
+  const [isLoading, setIsLoading] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(!cachedData);
+  const [error, setError] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(null);
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    if (cachedData) {
+      setData(cachedData);
+      setIsLoading(false);
+      return;
+    }
+    dataStore.fetchAll().then(fetchedData => {
+      setData(fetchedData);
+      setError(null);
+    }).catch(err => {
+      console.error('Error in useDataStore:', err);
+      setError(err.message);
+    }).finally(() => {
+      setIsLoading(false);
+    });
+  }, []);
+  return {
+    data,
+    loading: isLoading,
+    error
+  };
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (dataStore);
 
 /***/ }),
 

@@ -16,7 +16,7 @@ class DocGroupCollection extends \ARC\Gateway\Collection
      */
     protected $routes = [
         'enabled' => true,
-        'prefix' => 'doc-groups',
+        'prefix' => 'doc_groups',
         'methods' => [
             'get_many' => true,      // GET /api/doc-groups
             'get_one' => true,       // GET /api/doc-groups/{id}

@@ -1,32 +1,8 @@
-import { useState, useEffect } from '@wordpress/element';
-import api from '../api';
+import { useDataStore } from '../store/dataStore';
 import DocSetsList from './DocSetsList';
 
 function Home() {
-    const [docsets, setDocsets] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                const docsetsResponse = await api.get('doc_sets');
-
-                const docsetsItems = docsetsResponse?.data?.data?.items;
-                setDocsets(Array.isArray(docsetsItems) ? docsetsItems : []);
-
-                setError(null);
-            } catch (err) {
-                console.error('Error fetching data:', err);
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-    }, []);
+    const { data, loading, error } = useDataStore();
 
     return (
         <div className="p-8 max-w-4xl mx-auto">
@@ -36,10 +12,10 @@ function Home() {
             {loading && <p className="text-gray-500">Loading...</p>}
             {error && <p className="text-red-600">Error: {error}</p>}
 
-            {!loading && !error && (
+            {!loading && !error && data && (
                 <div className="mt-6">
                     <h2 className="text-2xl font-semibold mb-4">Documentation Sets</h2>
-                    <DocSetsList docsets={docsets} />
+                    <DocSetsList docsets={data.docSets} />
 
                     <div className="mt-12 pt-8 border-t border-gray-200 text-center">
                         <p className="text-lg font-semibold text-gray-700 mb-2">Powered by Waypoint</p>

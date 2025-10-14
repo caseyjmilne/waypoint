@@ -16,7 +16,7 @@ class DocSetCollection extends \ARC\Gateway\Collection
      */
     protected $routes = [
         'enabled' => true,
-        'prefix' => 'doc-sets',
+        'prefix' => 'doc_sets',
         'methods' => [
             'get_many' => true,      // GET /api/doc-sets
             'get_one' => true,       // GET /api/doc-sets/{id}
