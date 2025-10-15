@@ -1,18 +1,15 @@
 import { Link, useParams } from 'react-router-dom';
 
-function Sidebar({ docset, docGroups, allDocs }) {
+function Sidebar({ docset, docGroups, allDocs, data }) {
     const { docsetSlug, groupSlug, docSlug } = useParams();
 
     return (
-        <aside className="w-64 bg-gray-50 border-r border-gray-200 p-6 overflow-y-auto">
+        <aside className="w-64 bg-gray-50 border-r border-gray-200 p-6 sticky top-0 h-screen overflow-y-auto">
             <h2 className="text-xl font-bold text-gray-800 mb-4">{docset.name}</h2>
 
             <nav>
                 {docGroups.map((group) => {
-                    const groupDocs = group.doc_ids || [];
-                    const docs = groupDocs
-                        .map(id => allDocs.find(d => d.id === id))
-                        .filter(doc => doc !== undefined);
+                    const docs = data.getDocsByDocGroupId(group.id);
 
                     const isActiveGroup = group.slug === groupSlug;
 

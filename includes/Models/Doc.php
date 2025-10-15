@@ -13,6 +13,7 @@ class Doc extends Model
         'title',
         'content',
         'slug',
+        'position',
     ];
 
     /**

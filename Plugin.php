@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Waypoint
  * Description: Multi-set documentation management for WordPress
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: ARC Software
  */
 
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('WAYPOINT_VERSION', '1.0.0');
+define('WAYPOINT_VERSION', '1.0.1');
 define('WAYPOINT_PATH', plugin_dir_path(__FILE__));
 define('WAYPOINT_URL', plugin_dir_url(__FILE__));
 define('WAYPOINT_FILE', __FILE__);
@@ -33,10 +33,18 @@ class Plugin
     {
         add_action('arc_gateway_loaded', [$this, 'registerCollections']);
         add_action('arc_gateway_loaded', [$this, 'registerSchemas']);
+        add_action('plugins_loaded', [$this, 'initAdminPage']);
         add_action('init', [$this, 'addRewriteRules']);
         add_filter('query_vars', [$this, 'addQueryVars']);
         add_action('template_redirect', [$this, 'templateLoader']);
         register_activation_hook(WAYPOINT_FILE, [$this, 'activate']);
+    }
+
+    public function initAdminPage()
+    {
+        if (is_admin()) {
+            new Admin\Pages();
+        }
     }
 
     public function activate()
@@ -65,6 +73,8 @@ class Plugin
             return;
         }
 
+        Schemas\DocSetSchema::register('doc_set');
+        Schemas\DocGroupSchema::register('doc_group');
         Schemas\DocSchema::register('doc');
     }
 
