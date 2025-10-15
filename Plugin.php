@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Waypoint
  * Description: Multi-set documentation management for WordPress
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: ARC Software
  */
 
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('WAYPOINT_VERSION', '1.0.0');
+define('WAYPOINT_VERSION', '1.0.1');
 define('WAYPOINT_PATH', plugin_dir_path(__FILE__));
 define('WAYPOINT_URL', plugin_dir_url(__FILE__));
 define('WAYPOINT_FILE', __FILE__);
