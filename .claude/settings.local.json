@@ -13,7 +13,13 @@
       "Read(//c/Users/HP/Local Sites/trackify/app/public/wp-content/plugins/arc-router/**)",
       "Bash(npx tailwindcss init:*)",
       "Bash(git rm:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Read(//c/Users/HP/Local Sites/trackify/app/public/wp-content/plugins/**)",
+      "Bash(cd:*)",
+      "Bash(git branch:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(git tag:*)"
     ],
     "deny": [],
     "ask": []

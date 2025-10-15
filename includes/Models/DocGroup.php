@@ -6,17 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class DocGroup extends Model
 {
-    protected $table = 'docgroups';
+    protected $table = 'doc_groups';
 
     protected $fillable = [
-        'docset_id',
+        'doc_set_id',
         'title',
         'slug',
-        'doc_ids',
-    ];
-
-    protected $casts = [
-        'doc_ids' => 'array',
+        'position',
     ];
 
     /**
@@ -26,26 +22,16 @@ class DocGroup extends Model
      */
     public function docSet()
     {
-        return $this->belongsTo(DocSet::class, 'docset_id');
+        return $this->belongsTo(DocSet::class, 'doc_set_id');
     }
 
     /**
-     * Get ordered docs using FIELD() ordering based on doc_ids array.
+     * Get docs for this doc group ordered by position.
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function docs()
     {
-        $ids = $this->doc_ids ?? [];
-
-        if (empty($ids)) {
-            return collect([]);
-        }
-
-        $idsString = implode(',', $ids);
-
-        return Doc::whereIn('id', $ids)
-            ->orderByRaw("FIELD(id, {$idsString})")
-            ->get();
+        return $this->hasMany(Doc::class, 'doc_group_id')->orderBy('position');
     }
 }

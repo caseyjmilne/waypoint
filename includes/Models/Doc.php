@@ -9,10 +9,11 @@ class Doc extends Model
     protected $table = 'docs';
 
     protected $fillable = [
-        'docgroup_id',
+        'doc_group_id',
         'title',
         'content',
         'slug',
+        'position',
     ];
 
     /**
@@ -22,6 +23,6 @@ class Doc extends Model
      */
     public function docGroup()
     {
-        return $this->belongsTo(DocGroup::class, 'docgroup_id');
+        return $this->belongsTo(DocGroup::class, 'doc_group_id');
     }
 }
