@@ -6,10 +6,32 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useDataStore } from '../store/dataStore';
 import Sidebar from './Sidebar';
+import TableOfContents from './TableOfContents';
 
 function DocPage() {
     const { docsetSlug, groupSlug, docSlug } = useParams();
     const { data, loading, error } = useDataStore();
+
+    // Helper function to create heading IDs - using a simple counter approach
+    let headingIdCounter = 0;
+    const usedSlugs = {};
+
+    const createHeadingId = (text) => {
+        const baseSlug = text
+            .toLowerCase()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/\s+/g, '-');
+
+        // Check if this slug has been used before
+        if (!usedSlugs[baseSlug]) {
+            usedSlugs[baseSlug] = 0;
+            return baseSlug;
+        } else {
+            // Increment counter for duplicate headings
+            usedSlugs[baseSlug]++;
+            return `${baseSlug}-${usedSlugs[baseSlug]}`;
+        }
+    };
 
     if (loading) {
         return (
@@ -38,36 +60,67 @@ function DocPage() {
 
     return (
         <div className="flex min-h-screen">
-            <Sidebar docset={docset} docGroups={docGroups} allDocs={allDocs} />
+            <Sidebar docset={docset} docGroups={docGroups} allDocs={allDocs} data={data} />
 
             <main className="flex-1 p-8 max-w-4xl">
                 {doc?.content ? (
-                    <div className="prose max-w-none">
-                        <ReactMarkdown
-                            remarkPlugins={[remarkGfm]}
-                            rehypePlugins={[rehypeSanitize]}
-                            components={{
-                                code({ node, inline, className, children, ...props }) {
-                                    const match = /language-(\w+)/.exec(className || '');
-                                    return !inline && match ? (
-                                        <SyntaxHighlighter
-                                            style={oneDark}
-                                            language={match[1]}
-                                            PreTag="div"
-                                            {...props}
-                                        >
-                                            {String(children).replace(/\n$/, '')}
-                                        </SyntaxHighlighter>
-                                    ) : (
-                                        <code className={className} {...props}>
-                                            {children}
-                                        </code>
-                                    );
-                                }
-                            }}
-                        >
-                            {doc.content}
-                        </ReactMarkdown>
+                    <div className="flex gap-8">
+                        <div className="prose max-w-none flex-1">
+                            {doc.title && <h1>{doc.title}</h1>}
+                            <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                components={{
+                                    h2: ({ node, children }) => {
+                                        const text = String(children);
+                                        const id = createHeadingId(text);
+                                        return <h2 id={id}>{children}</h2>;
+                                    },
+                                    h3: ({ node, children }) => {
+                                        const text = String(children);
+                                        const id = createHeadingId(text);
+                                        return <h3 id={id}>{children}</h3>;
+                                    },
+                                    h4: ({ node, children }) => {
+                                        const text = String(children);
+                                        const id = createHeadingId(text);
+                                        return <h4 id={id}>{children}</h4>;
+                                    },
+                                    h5: ({ node, children }) => {
+                                        const text = String(children);
+                                        const id = createHeadingId(text);
+                                        return <h5 id={id}>{children}</h5>;
+                                    },
+                                    h6: ({ node, children }) => {
+                                        const text = String(children);
+                                        const id = createHeadingId(text);
+                                        return <h6 id={id}>{children}</h6>;
+                                    },
+                                    code({ node, inline, className, children, ...props }) {
+                                        const match = /language-(\w+)/.exec(className || '');
+                                        return !inline && match ? (
+                                            <SyntaxHighlighter
+                                                style={oneDark}
+                                                language={match[1]}
+                                                PreTag="div"
+                                                {...props}
+                                            >
+                                                {String(children).replace(/\n$/, '')}
+                                            </SyntaxHighlighter>
+                                        ) : (
+                                            <code className={className} {...props}>
+                                                {children}
+                                            </code>
+                                        );
+                                    }
+                                }}
+                            >
+                                {doc.content}
+                            </ReactMarkdown>
+                        </div>
+
+                        <aside className="w-64 hidden lg:block">
+                            <TableOfContents content={doc.content} />
+                        </aside>
                     </div>
                 ) : (
                     <p className="text-gray-500">No content available</p>

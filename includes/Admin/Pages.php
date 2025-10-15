@@ -11,6 +11,34 @@ class Pages
     {
         add_action('admin_menu', [$this, 'addMenuPage']);
         add_action('admin_enqueue_scripts', [$this, 'enqueueAssets']);
+        add_action('admin_init', [$this, 'handleDeleteActions']);
+    }
+
+    /**
+     * Handle delete actions before any output is sent
+     */
+    public function handleDeleteActions()
+    {
+        // Check if we're on a waypoint admin page with a delete action
+        if (!isset($_GET['page']) || !isset($_GET['action']) || $_GET['action'] !== 'delete') {
+            return;
+        }
+
+        $page = sanitize_text_field($_GET['page']);
+        $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+        // Route to appropriate delete handler
+        switch ($page) {
+            case 'waypoint-docs':
+                DocPage::handleDelete($id);
+                break;
+            case 'waypoint-doc-groups':
+                DocGroupPage::handleDelete($id);
+                break;
+            case 'waypoint-doc-sets':
+                DocSetPage::handleDelete($id);
+                break;
+        }
     }
 
     /**

@@ -23,7 +23,7 @@ function DocGroupPage() {
 
     return (
         <div className="flex min-h-screen">
-            <Sidebar docset={docset} docGroups={docGroups} allDocs={allDocs} />
+            <Sidebar docset={docset} docGroups={docGroups} allDocs={allDocs} data={data} />
 
             <main className="flex-1 p-8 max-w-4xl">
                 <h1 className="text-4xl font-bold text-blue-800 mb-2">{docGroup.title}</h1>

@@ -29,6 +29,37 @@ class DocGroupPage
     }
 
     /**
+     * Handle doc group deletion
+     */
+    public static function handleDelete($group_id)
+    {
+        // Verify nonce
+        if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'delete_doc_group_' . $group_id)) {
+            wp_die('Security check failed');
+        }
+
+        if (!$group_id) {
+            wp_die('Invalid Doc Group ID');
+        }
+
+        $group = DocGroup::find($group_id);
+        if (!$group) {
+            wp_die('Doc Group not found');
+        }
+
+        // Delete the doc group
+        $group->delete();
+
+        // Redirect back to list with success message
+        $redirect_url = add_query_arg(
+            array('page' => 'waypoint-doc-groups', 'deleted' => '1'),
+            admin_url('admin.php')
+        );
+        wp_redirect($redirect_url);
+        exit;
+    }
+
+    /**
      * Render the doc groups list
      */
     private static function renderList()
@@ -43,6 +74,12 @@ class DocGroupPage
             <h1 class="wp-heading-inline">Doc Groups</h1>
             <a href="<?php echo admin_url('admin.php?page=waypoint-doc-groups&action=new'); ?>" class="page-title-action">Add New</a>
             <hr class="wp-header-end">
+
+            <?php if (isset($_GET['deleted']) && $_GET['deleted'] == '1'): ?>
+                <div class="notice notice-success is-dismissible">
+                    <p>Doc Group deleted successfully.</p>
+                </div>
+            <?php endif; ?>
 
             <?php if (empty($doc_groups) || $doc_groups->isEmpty()): ?>
                 <p>No doc groups found. <a href="<?php echo admin_url('admin.php?page=waypoint-doc-groups&action=new'); ?>">Create your first doc group</a>.</p>
@@ -69,7 +106,12 @@ class DocGroupPage
                                     </strong>
                                     <div class="row-actions">
                                         <span class="edit">
-                                            <a href="<?php echo admin_url('admin.php?page=waypoint-doc-groups&action=edit&id=' . $group->id); ?>">Edit</a>
+                                            <a href="<?php echo admin_url('admin.php?page=waypoint-doc-groups&action=edit&id=' . $group->id); ?>">Edit</a> |
+                                        </span>
+                                        <span class="trash">
+                                            <a href="<?php echo wp_nonce_url(admin_url('admin.php?page=waypoint-doc-groups&action=delete&id=' . $group->id), 'delete_doc_group_' . $group->id); ?>"
+                                               class="submitdelete"
+                                               onclick="return confirm('Are you sure you want to delete this doc group?');">Delete</a>
                                         </span>
                                     </div>
                                 </td>
@@ -90,7 +132,10 @@ class DocGroupPage
                                     <?php echo esc_html(mysql2date('Y/m/d', $group->created_at)); ?>
                                 </td>
                                 <td data-colname="Actions">
-                                    <a href="<?php echo admin_url('admin.php?page=waypoint-doc-groups&action=edit&id=' . $group->id); ?>">Edit</a>
+                                    <a href="<?php echo admin_url('admin.php?page=waypoint-doc-groups&action=edit&id=' . $group->id); ?>">Edit</a> |
+                                    <a href="<?php echo wp_nonce_url(admin_url('admin.php?page=waypoint-doc-groups&action=delete&id=' . $group->id), 'delete_doc_group_' . $group->id); ?>"
+                                       class="submitdelete"
+                                       onclick="return confirm('Are you sure you want to delete this doc group?');">Delete</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

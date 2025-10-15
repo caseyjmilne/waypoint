@@ -29,6 +29,37 @@ class DocPage
     }
 
     /**
+     * Handle doc deletion
+     */
+    public static function handleDelete($doc_id)
+    {
+        // Verify nonce
+        if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'delete_doc_' . $doc_id)) {
+            wp_die('Security check failed');
+        }
+
+        if (!$doc_id) {
+            wp_die('Invalid Doc ID');
+        }
+
+        $doc = Doc::find($doc_id);
+        if (!$doc) {
+            wp_die('Doc not found');
+        }
+
+        // Delete the doc
+        $doc->delete();
+
+        // Redirect back to list with success message
+        $redirect_url = add_query_arg(
+            array('page' => 'waypoint-docs', 'deleted' => '1'),
+            admin_url('admin.php')
+        );
+        wp_redirect($redirect_url);
+        exit;
+    }
+
+    /**
      * Render the docs list
      */
     private static function renderList()
@@ -41,6 +72,12 @@ class DocPage
             <h1 class="wp-heading-inline">Docs</h1>
             <a href="<?php echo admin_url('admin.php?page=waypoint-docs&action=new'); ?>" class="page-title-action">Add New</a>
             <hr class="wp-header-end">
+
+            <?php if (isset($_GET['deleted']) && $_GET['deleted'] == '1'): ?>
+                <div class="notice notice-success is-dismissible">
+                    <p>Doc deleted successfully.</p>
+                </div>
+            <?php endif; ?>
 
             <?php if (empty($docs) || $docs->isEmpty()): ?>
                 <p>No docs found. <a href="<?php echo admin_url('admin.php?page=waypoint-docs&action=new'); ?>">Create your first doc</a>.</p>
@@ -66,7 +103,12 @@ class DocPage
                                     </strong>
                                     <div class="row-actions">
                                         <span class="edit">
-                                            <a href="<?php echo admin_url('admin.php?page=waypoint-docs&action=edit&id=' . $doc->id); ?>">Edit</a>
+                                            <a href="<?php echo admin_url('admin.php?page=waypoint-docs&action=edit&id=' . $doc->id); ?>">Edit</a> |
+                                        </span>
+                                        <span class="trash">
+                                            <a href="<?php echo wp_nonce_url(admin_url('admin.php?page=waypoint-docs&action=delete&id=' . $doc->id), 'delete_doc_' . $doc->id); ?>"
+                                               class="submitdelete"
+                                               onclick="return confirm('Are you sure you want to delete this doc?');">Delete</a>
                                         </span>
                                     </div>
                                 </td>
@@ -84,7 +126,10 @@ class DocPage
                                     <?php echo esc_html(mysql2date('Y/m/d', $doc->created_at)); ?>
                                 </td>
                                 <td data-colname="Actions">
-                                    <a href="<?php echo admin_url('admin.php?page=waypoint-docs&action=edit&id=' . $doc->id); ?>">Edit</a>
+                                    <a href="<?php echo admin_url('admin.php?page=waypoint-docs&action=edit&id=' . $doc->id); ?>">Edit</a> |
+                                    <a href="<?php echo wp_nonce_url(admin_url('admin.php?page=waypoint-docs&action=delete&id=' . $doc->id), 'delete_doc_' . $doc->id); ?>"
+                                       class="submitdelete"
+                                       onclick="return confirm('Are you sure you want to delete this doc?');">Delete</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

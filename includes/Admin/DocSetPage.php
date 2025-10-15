@@ -29,6 +29,37 @@ class DocSetPage
     }
 
     /**
+     * Handle doc set deletion
+     */
+    public static function handleDelete($set_id)
+    {
+        // Verify nonce
+        if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'delete_doc_set_' . $set_id)) {
+            wp_die('Security check failed');
+        }
+
+        if (!$set_id) {
+            wp_die('Invalid Doc Set ID');
+        }
+
+        $set = DocSet::find($set_id);
+        if (!$set) {
+            wp_die('Doc Set not found');
+        }
+
+        // Delete the doc set
+        $set->delete();
+
+        // Redirect back to list with success message
+        $redirect_url = add_query_arg(
+            array('page' => 'waypoint-doc-sets', 'deleted' => '1'),
+            admin_url('admin.php')
+        );
+        wp_redirect($redirect_url);
+        exit;
+    }
+
+    /**
      * Render the doc sets list
      */
     private static function renderList()
@@ -41,6 +72,12 @@ class DocSetPage
             <h1 class="wp-heading-inline">Doc Sets</h1>
             <a href="<?php echo admin_url('admin.php?page=waypoint-doc-sets&action=new'); ?>" class="page-title-action">Add New</a>
             <hr class="wp-header-end">
+
+            <?php if (isset($_GET['deleted']) && $_GET['deleted'] == '1'): ?>
+                <div class="notice notice-success is-dismissible">
+                    <p>Doc Set deleted successfully.</p>
+                </div>
+            <?php endif; ?>
 
             <?php if (empty($doc_sets)): ?>
                 <p>No doc sets found. <a href="<?php echo admin_url('admin.php?page=waypoint-doc-sets&action=new'); ?>">Create your first doc set</a>.</p>
@@ -66,7 +103,12 @@ class DocSetPage
                                     </strong>
                                     <div class="row-actions">
                                         <span class="edit">
-                                            <a href="<?php echo admin_url('admin.php?page=waypoint-doc-sets&action=edit&id=' . $set->id); ?>">Edit</a>
+                                            <a href="<?php echo admin_url('admin.php?page=waypoint-doc-sets&action=edit&id=' . $set->id); ?>">Edit</a> |
+                                        </span>
+                                        <span class="trash">
+                                            <a href="<?php echo wp_nonce_url(admin_url('admin.php?page=waypoint-doc-sets&action=delete&id=' . $set->id), 'delete_doc_set_' . $set->id); ?>"
+                                               class="submitdelete"
+                                               onclick="return confirm('Are you sure you want to delete this doc set?');">Delete</a>
                                         </span>
                                     </div>
                                 </td>
@@ -83,7 +125,10 @@ class DocSetPage
                                     <?php echo esc_html(mysql2date('Y/m/d', $set->created_at)); ?>
                                 </td>
                                 <td data-colname="Actions">
-                                    <a href="<?php echo admin_url('admin.php?page=waypoint-doc-sets&action=edit&id=' . $set->id); ?>">Edit</a>
+                                    <a href="<?php echo admin_url('admin.php?page=waypoint-doc-sets&action=edit&id=' . $set->id); ?>">Edit</a> |
+                                    <a href="<?php echo wp_nonce_url(admin_url('admin.php?page=waypoint-doc-sets&action=delete&id=' . $set->id), 'delete_doc_set_' . $set->id); ?>"
+                                       class="submitdelete"
+                                       onclick="return confirm('Are you sure you want to delete this doc set?');">Delete</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
