@@ -31,8 +31,7 @@ class Plugin
 
     private function registerHooks()
     {
-        add_action('arc_gateway_loaded', [$this, 'registerCollections']);
-        add_action('arc_gateway_loaded', [$this, 'registerSchemas']);
+        add_action('gateway_loaded', [$this, 'registerCollections']);
         add_action('plugins_loaded', [$this, 'initAdminPage']);
         add_action('init', [$this, 'addRewriteRules']);
         add_filter('query_vars', [$this, 'addQueryVars']);
@@ -59,23 +58,13 @@ class Plugin
 
     public function registerCollections()
     {
-        if (!class_exists('\ARC\Gateway\Collection')) {
+        if (!class_exists('\Gateway\Collection')) {
             return;
         }
 
         Collections\DocSetCollection::register();
         Collections\DocGroupCollection::register();
         Collections\DocCollection::register();
-    }
-
-    public function registerSchemas() {
-        if (!class_exists('\ARC\Blueprint\Schema')) {
-            return;
-        }
-
-        Schemas\DocSetSchema::register('doc_set');
-        Schemas\DocGroupSchema::register('doc_group');
-        Schemas\DocSchema::register('doc');
     }
 
     public function addRewriteRules()

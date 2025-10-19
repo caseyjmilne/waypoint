@@ -2,29 +2,28 @@
 
 namespace Waypoint\Collections;
 
-use Waypoint\Models\Doc;
-
-class DocCollection extends \ARC\Gateway\Collection
+class DocCollection extends \Gateway\Collection
 {
-    /**
-     * @var string The Eloquent model this collection manages
-     */
-    protected $model = Doc::class;
+    protected $key = 'docs';
+    protected $table = 'docs';
+    protected $fillable = ['doc_group_id', 'title', 'content', 'slug', 'position'];
 
     /**
      * @var array API route configuration
      */
     protected $routes = [
         'enabled' => true,
-        'prefix' => 'docs',
+        'namespace' => 'gateway',
+        'version' => 'v1',
+        'route' => 'docs',
+        'allow_basic_auth' => true,
         'methods' => [
-            'get_many' => true,      // GET /api/docs
-            'get_one' => true,       // GET /api/docs/{id}
-            'create' => true,        // POST /api/docs
-            'update' => true,        // PUT/PATCH /api/docs/{id}
-            'delete' => true,        // DELETE /api/docs/{id}
+            'get_many' => true,
+            'get_one' => true,
+            'create' => true,
+            'update' => true,
+            'delete' => true,
         ],
-        'middleware' => [],
         'permissions' => [
             'get_many' => 'read',
             'get_one' => 'read',
@@ -35,16 +34,63 @@ class DocCollection extends \ARC\Gateway\Collection
     ];
 
     /**
-     * @var array Model analysis configuration
+     * @var array Field definitions
      */
-    protected $config = [
-        'searchable' => ['title', 'content', 'slug'],
-        'filterable' => ['slug', 'docgroup_id'],
-        'sortable' => ['title', 'created_at', 'updated_at'],
-        'relations' => ['docGroup'],
-        'hidden' => [],
-        'appends' => [],
-        'per_page' => 15,
-        'max_per_page' => 100,
+    protected $fields = [
+        'title' => [
+            'type' => 'text',
+            'label' => 'Doc Title',
+            'required' => true,
+            'placeholder' => 'Doc title...',
+        ],
+        'content' => [
+            'type' => 'markdown',
+            'label' => 'Content',
+        ],
+        'doc_group_id' => [
+            'type' => 'relation',
+            'label' => 'Doc Group',
+            'required' => true,
+            'relation' => [
+                'endpoint' => '/wp-json/gateway/v1/doc-groups',
+                'labelField' => 'title',
+                'valueField' => 'id',
+                'placeholder' => 'Select a doc group...',
+            ],
+        ],
+        'position' => [
+            'type' => 'number',
+            'label' => 'Position',
+            'required' => false,
+            'default' => 0,
+        ],
+    ];
+
+    /**
+     * @var array Filter definitions
+     */
+    protected $filters = [
+        [
+            'type' => 'text',
+            'field' => 'search',
+            'label' => 'Search',
+            'placeholder' => 'Search docs...',
+        ],
+        [
+            'type' => 'select',
+            'field' => 'doc_group_id',
+            'label' => 'Doc Group',
+            'placeholder' => 'All Doc Groups',
+            'options_endpoint' => '/wp-json/gateway/v1/doc-groups',
+        ],
+        [
+            'type' => 'date_range',
+            'field' => 'created_at',
+            'label' => 'Created Date',
+            'placeholder' => [
+                'start' => 'Start Date',
+                'end' => 'End Date',
+            ],
+        ],
     ];
 }

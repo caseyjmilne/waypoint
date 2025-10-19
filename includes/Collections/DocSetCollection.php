@@ -2,29 +2,28 @@
 
 namespace Waypoint\Collections;
 
-use Waypoint\Models\DocSet;
-
-class DocSetCollection extends \ARC\Gateway\Collection
+class DocSetCollection extends \Gateway\Collection
 {
-    /**
-     * @var string The Eloquent model this collection manages
-     */
-    protected $model = DocSet::class;
+    protected $key = 'doc_sets';
+    protected $table = 'doc_sets';
+    protected $fillable = ['name', 'description', 'slug', 'icon'];
 
     /**
      * @var array API route configuration
      */
     protected $routes = [
         'enabled' => true,
-        'prefix' => 'doc_sets',
+        'namespace' => 'gateway',
+        'version' => 'v1',
+        'route' => 'doc-sets',
+        'allow_basic_auth' => true,
         'methods' => [
-            'get_many' => true,      // GET /api/doc-sets
-            'get_one' => true,       // GET /api/doc-sets/{id}
-            'create' => true,        // POST /api/doc-sets
-            'update' => true,        // PUT/PATCH /api/doc-sets/{id}
-            'delete' => true,        // DELETE /api/doc-sets/{id}
+            'get_many' => true,
+            'get_one' => true,
+            'create' => true,
+            'update' => true,
+            'delete' => true,
         ],
-        'middleware' => [],
         'permissions' => [
             'get_many' => 'read',
             'get_one' => 'read',
@@ -35,16 +34,47 @@ class DocSetCollection extends \ARC\Gateway\Collection
     ];
 
     /**
-     * @var array Model analysis configuration
+     * @var array Field definitions
      */
-    protected $config = [
-        'searchable' => ['name', 'description'],
-        'filterable' => ['name'],
-        'sortable' => ['name', 'created_at', 'updated_at'],
-        'relations' => [],
-        'hidden' => [],
-        'appends' => [],
-        'per_page' => 15,
-        'max_per_page' => 100,
+    protected $fields = [
+        'name' => [
+            'type' => 'text',
+            'label' => 'Doc Set Name',
+            'required' => true,
+            'placeholder' => 'Doc set name...',
+        ],
+        'description' => [
+            'type' => 'textarea',
+            'label' => 'Description',
+            'required' => false,
+            'placeholder' => 'Doc set description...',
+        ],
+        'icon' => [
+            'type' => 'text',
+            'label' => 'Icon',
+            'required' => false,
+            'placeholder' => 'Icon name or URL...',
+        ],
+    ];
+
+    /**
+     * @var array Filter definitions
+     */
+    protected $filters = [
+        [
+            'type' => 'text',
+            'field' => 'search',
+            'label' => 'Search',
+            'placeholder' => 'Search doc sets...',
+        ],
+        [
+            'type' => 'date_range',
+            'field' => 'created_at',
+            'label' => 'Created Date',
+            'placeholder' => [
+                'start' => 'Start Date',
+                'end' => 'End Date',
+            ],
+        ],
     ];
 }
