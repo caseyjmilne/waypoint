@@ -25,11 +25,32 @@ class DocCollection extends \Gateway\Collection
             'delete' => true,
         ],
         'permissions' => [
-            'get_many' => 'read',
-            'get_one' => 'read',
-            'create' => 'edit_posts',
-            'update' => 'edit_posts',
-            'delete' => 'delete_posts',
+            'get_many' => [
+                'type' => 'nonce_only',
+                'settings' => []
+            ],
+            'get_one' => [
+                'type' => 'nonce_only',
+                'settings' => []
+            ],
+            'create' => [
+                'type' => 'cookie_authentication',
+                'settings' => [
+                    'capability' => 'edit_posts'
+                ]
+            ],
+            'update' => [
+                'type' => 'cookie_authentication',
+                'settings' => [
+                    'capability' => 'edit_posts'
+                ]
+            ],
+            'delete' => [
+                'type' => 'cookie_authentication',
+                'settings' => [
+                    'capability' => 'delete_posts'
+                ]
+            ],
         ],
     ];
 

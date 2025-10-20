@@ -4,7 +4,7 @@ Tags: documentation, docs, knowledge-base, wiki, help
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,6 +51,13 @@ Yes, you can create unlimited documentation sets and organize them into groups.
 
 == Changelog ==
 
+= 1.1.0 =
+* Rebuilt for Gateway plugin with singular collections
+* Removed legacy admin pages and models
+* Migrated to Gateway Collection system
+* Streamlined architecture for better performance
+* Updated frontend build with latest dependencies
+
 = 1.0.1 =
 * Improved documentation layout
 * Fixed table of contents positioning
@@ -64,6 +71,9 @@ Yes, you can create unlimited documentation sets and organize them into groups.
 * Frontend template system
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+Major refactor to work with Gateway plugin collections. Requires Gateway plugin.
 
 = 1.0.1 =
 Layout and navigation improvements for better user experience.
