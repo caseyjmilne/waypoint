@@ -6,20 +6,24 @@ function Home() {
 
     return (
         <div className="p-8 max-w-4xl mx-auto">
-            <h1 className="text-4xl font-bold text-blue-800 mb-4">ARC Suite Documentation</h1>
-            <p className="text-gray-600 mb-6">ARC Suite is a collection of WordPress plugins and Javascript packages that work together to create a cohesive/scalable/modern WP powered framework that is precision engineered for the AI-era of software development.</p>
+            <h1 className="text-4xl font-black font-lexend text-slate-900 dark:text-slate-50 mb-4">ARCWP Documentation</h1>
 
-            {loading && <p className="text-gray-500">Loading...</p>}
-            {error && <p className="text-red-600">Error: {error}</p>}
+            {loading && (
+                <div className="mt-6 space-y-4 animate-pulse">
+                    <div className="h-24 bg-slate-900 dark:bg-slate-50 opacity-20 rounded-lg"></div>
+                    <div className="h-24 bg-slate-900 dark:bg-slate-50 opacity-20 rounded-lg"></div>
+                    <div className="h-24 bg-slate-900 dark:bg-slate-50 opacity-20 rounded-lg"></div>
+                </div>
+            )}
+            {error && <p className="text-orange-600">Error: {error}</p>}
 
             {!loading && !error && data && (
                 <div className="mt-6">
-                    <h2 className="text-2xl font-semibold mb-4">Documentation Sets</h2>
                     <DocSetsList docsets={data.docSets} />
 
-                    <div className="mt-12 pt-8 border-t border-gray-200 text-center">
-                        <p className="text-lg font-semibold text-gray-700 mb-2">Powered by Waypoint</p>
-                        <p className="text-sm text-gray-500">Waypoint is an AI-powered documentation engine for WordPress.</p>
+                    <div className="mt-12 pt-8 border-t border-slate-900 dark:border-slate-50 text-center">
+                        <p className="text-lg font-semibold text-slate-900 dark:text-slate-50 mb-2">Powered by Waypoint</p>
+                        <p className="text-sm text-slate-900 dark:text-slate-50">Waypoint is an AI-powered documentation engine for WordPress.</p>
                     </div>
                 </div>
             )}
