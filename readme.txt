@@ -51,6 +51,10 @@ Yes, you can create unlimited documentation sets and organize them into groups.
 
 == Changelog ==
 
+= 1.1.1 =
+* Colors to match brand guidelines
+* Fixes minor UI issues with link lists
+
 = 1.1.0 =
 * Rebuilt for Gateway plugin with singular collections
 * Removed legacy admin pages and models
