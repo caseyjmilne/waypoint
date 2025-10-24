@@ -48,8 +48,8 @@ function TableOfContents({ content }) {
     }
 
     return (
-        <nav className="toc bg-gray-50 border border-gray-200 rounded-lg p-4 sticky top-4 max-h-[80vh] overflow-y-auto">
-            <h3 className="text-sm font-semibold text-gray-900 mb-3 uppercase tracking-wide">
+        <nav className="toc border border-slate-900 dark:border-slate-50 rounded-lg p-4 sticky top-4 max-h-[80vh] overflow-y-auto">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50 mb-3 uppercase tracking-wide">
                 Table of Contents
             </h3>
             <ul className="space-y-1 text-sm pr-2">
@@ -61,7 +61,7 @@ function TableOfContents({ content }) {
                         <li key={heading.id} style={{ marginLeft: `${indent}px` }}>
                             <a
                                 href={`#${heading.id}`}
-                                className="text-gray-600 hover:text-blue-600 transition-colors duration-150 block py-1"
+                                className="text-slate-900 dark:text-slate-50 hover:text-orange-600 transition-colors duration-150 block py-1"
                                 onClick={(e) => {
                                     e.preventDefault();
                                     const element = document.getElementById(heading.id);

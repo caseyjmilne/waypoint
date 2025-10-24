@@ -1,13 +1,35 @@
 @import "tailwindcss";
 
 .prose {
-  color: #374151;
+  color: #0f172a;
   max-width: 65ch;
+}
+
+.dark .prose {
+  color: #f8fafc;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  color: #0f172a;
+}
+
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3,
+.dark .prose h4,
+.dark .prose h5,
+.dark .prose h6 {
+  color: #f8fafc;
 }
 
 .prose h1 {
   font-size: 2.25em;
-  font-weight: 700;
+  font-weight: 900;
   margin-top: 0;
   margin-bottom: 0.8888889em;
   line-height: 1.1111111;
@@ -15,7 +37,7 @@
 
 .prose h2 {
   font-size: 1.875em;
-  font-weight: 700;
+  font-weight: 800;
   margin-top: 2em;
   margin-bottom: 1em;
   line-height: 1.3333333;
@@ -43,14 +65,18 @@
 }
 
 .prose code {
-  color: #111827;
+  color: #0f172a;
   font-weight: 600;
   font-size: 0.875em;
 }
 
+.dark .prose code {
+  color: #f8fafc;
+}
+
 .prose pre {
-  color: #e5e7eb;
-  background-color: #1f2937;
+  color: #f8fafc;
+  background-color: #0f172a;
   overflow-x: auto;
   font-weight: 400;
   font-size: 0.875em;
@@ -59,6 +85,11 @@
   margin-bottom: 1.7142857em;
   border-radius: 0.375rem;
   padding: 0.8571429em 1.1428571em;
+}
+
+.dark .prose pre {
+  background-color: #0f172a;
+  border: 1px solid #f8fafc;
 }
 
 .prose ul, .prose ol {
@@ -81,28 +112,37 @@
 }
 
 .prose a {
-  color: #2563eb;
-  text-decoration: underline;
+  color: #ea580c;
+  text-decoration: none;
   font-weight: 500;
 }
 
 .prose a:hover {
-  color: #1d4ed8;
+  opacity: 0.7;
 }
 
 .prose strong {
-  color: #111827;
+  color: #0f172a;
   font-weight: 600;
+}
+
+.dark .prose strong {
+  color: #f8fafc;
 }
 
 .prose blockquote {
   font-weight: 500;
   font-style: italic;
-  color: #111827;
+  color: #0f172a;
   border-left-width: 0.25rem;
-  border-left-color: #e5e7eb;
+  border-left-color: #0f172a;
   quotes: "\201C""\201D""\2018""\2019";
   margin-top: 1.6em;
   margin-bottom: 1.6em;
   padding-left: 1em;
+}
+
+.dark .prose blockquote {
+  color: #f8fafc;
+  border-left-color: #f8fafc;
 }

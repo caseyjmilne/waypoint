@@ -3,6 +3,8 @@ module.exports = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
+  important: '#waypoint-app',
+  darkMode: 'class',
   theme: {
     extend: {},
   },
