@@ -7,31 +7,15 @@ import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useDataStore } from '../store/dataStore';
 import Sidebar from './Sidebar';
 import TableOfContents from './TableOfContents';
+import { SlugTracker } from '../utils/slugify';
 
 function DocPage() {
     const { docsetSlug, groupSlug, docSlug } = useParams();
     const { data, loading, error } = useDataStore();
 
-    // Helper function to create heading IDs - using a simple counter approach
-    let headingIdCounter = 0;
-    const usedSlugs = {};
-
-    const createHeadingId = (text) => {
-        const baseSlug = text
-            .toLowerCase()
-            .replace(/[^\w\s-]/g, '')
-            .replace(/\s+/g, '-');
-
-        // Check if this slug has been used before
-        if (!usedSlugs[baseSlug]) {
-            usedSlugs[baseSlug] = 0;
-            return baseSlug;
-        } else {
-            // Increment counter for duplicate headings
-            usedSlugs[baseSlug]++;
-            return `${baseSlug}-${usedSlugs[baseSlug]}`;
-        }
-    };
+    // Create a slug tracker for heading IDs
+    // This must be recreated for each render to match TOC
+    const slugTracker = new SlugTracker();
 
     if (loading) {
         return (
@@ -63,40 +47,36 @@ function DocPage() {
     const doc = data.getDocBySlugAndDocGroupId(docSlug, docGroup.id);
 
     return (
-        <div className="flex min-h-screen overflow-x-hidden">
+        <div className="flex h-screen overflow-hidden">
             <Sidebar docset={docset} docGroups={docGroups} allDocs={allDocs} data={data} />
 
-            <main className="flex-1 p-8 min-w-0 overflow-x-hidden">
+            <main className="flex-1 overflow-y-auto overflow-x-hidden">
                 {doc?.content ? (
-                    <div className="flex gap-8">
-                        <div className="prose flex-1 min-w-0 overflow-hidden">
+                    <div className="flex gap-8 p-8">
+                        <div className="prose flex-1 min-w-0">
                             {doc.title && <h1 className="break-words">{doc.title}</h1>}
                             <ReactMarkdown
                                 remarkPlugins={[remarkGfm]}
                                 components={{
                                     h2: ({ node, children }) => {
-                                        const text = String(children);
-                                        const id = createHeadingId(text);
+                                        const id = slugTracker.getUniqueSlug(children);
+                                        console.log('[DocPage] h2 ID:', id, 'for text:', children);
                                         return <h2 id={id} className="break-words">{children}</h2>;
                                     },
                                     h3: ({ node, children }) => {
-                                        const text = String(children);
-                                        const id = createHeadingId(text);
+                                        const id = slugTracker.getUniqueSlug(children);
                                         return <h3 id={id} className="break-words">{children}</h3>;
                                     },
                                     h4: ({ node, children }) => {
-                                        const text = String(children);
-                                        const id = createHeadingId(text);
+                                        const id = slugTracker.getUniqueSlug(children);
                                         return <h4 id={id} className="break-words">{children}</h4>;
                                     },
                                     h5: ({ node, children }) => {
-                                        const text = String(children);
-                                        const id = createHeadingId(text);
+                                        const id = slugTracker.getUniqueSlug(children);
                                         return <h5 id={id} className="break-words">{children}</h5>;
                                     },
                                     h6: ({ node, children }) => {
-                                        const text = String(children);
-                                        const id = createHeadingId(text);
+                                        const id = slugTracker.getUniqueSlug(children);
                                         return <h6 id={id} className="break-words">{children}</h6>;
                                     },
                                     p: ({ node, children }) => {
@@ -130,12 +110,12 @@ function DocPage() {
                             </ReactMarkdown>
                         </div>
 
-                        <aside className="w-64 flex-shrink-0 hidden lg:block">
+                        <aside className="w-64 flex-shrink-0">
                             <TableOfContents content={doc.content} />
                         </aside>
                     </div>
                 ) : (
-                    <p className="text-slate-900 dark:text-slate-50">No content available</p>
+                    <p className="text-slate-900 dark:text-slate-50 p-8">No content available</p>
                 )}
             </main>
         </div>
