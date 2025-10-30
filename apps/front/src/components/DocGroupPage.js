@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useDataStore } from '../store/dataStore';
 import Sidebar from './Sidebar';
+import MobileSidebar from './MobileSidebar';
 import DocsList from './DocsList';
 
 function DocGroupPage() {
@@ -36,8 +37,13 @@ function DocGroupPage() {
         <div className="flex min-h-screen">
             <Sidebar docset={docset} docGroups={docGroups} allDocs={allDocs} data={data} />
 
-            <main className="flex-1 p-8 max-w-4xl">
+            <main className="flex-1 min-w-0 overflow-x-hidden p-8 max-w-4xl">
                 <h1 className="text-4xl font-black font-lexend text-slate-900 dark:text-slate-50 mb-2">{docGroup.title}</h1>
+
+                {/* Mobile Navigation - Shows only on mobile */}
+                <div className="mt-6">
+                    <MobileSidebar docset={docset} docGroups={docGroups} data={data} />
+                </div>
 
                 <div className="mt-6">
                     <h2 className="text-2xl font-extrabold font-lexend text-slate-900 dark:text-slate-50 mb-4">Docs</h2>

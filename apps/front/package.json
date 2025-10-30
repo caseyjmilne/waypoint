@@ -1,7 +1,7 @@
 {
   "name": "waypoint-front",
   "version": "1.1.0",
-  "description": "Waypoint frontend React app",
+  "description": "Waypoint Front App",
   "scripts": {
     "build": "wp-scripts build src/index.js --output-path=build",
     "start": "wp-scripts start src/index.js --output-path=build",

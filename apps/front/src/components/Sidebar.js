@@ -4,7 +4,7 @@ function Sidebar({ docset, docGroups, allDocs, data }) {
     const { docsetSlug, groupSlug, docSlug } = useParams();
 
     return (
-        <aside className="w-64 border-r border-slate-300 dark:border-slate-700 p-6 sticky top-0 h-screen overflow-y-auto">
+        <aside className="w-64 flex-shrink-0 border-r border-slate-300 dark:border-slate-700 p-6 sticky top-0 h-screen overflow-y-auto hidden md:block">
             <h2 className="text-xl font-bold font-lexend text-slate-900 dark:text-slate-50 mb-4">{docset.name}</h2>
 
             <nav>
