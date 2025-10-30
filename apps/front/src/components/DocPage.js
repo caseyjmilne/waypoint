@@ -6,7 +6,10 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useDataStore } from '../store/dataStore';
 import Sidebar from './Sidebar';
+import MobileSidebar from './MobileSidebar';
 import TableOfContents from './TableOfContents';
+import MobileTOC from './MobileTOC';
+import CopyCodeButton from './CopyCodeButton';
 import { SlugTracker } from '../utils/slugify';
 
 function DocPage() {
@@ -16,6 +19,21 @@ function DocPage() {
     // Create a slug tracker for heading IDs
     // This must be recreated for each render to match TOC
     const slugTracker = new SlugTracker();
+
+    // Customize syntax highlighter style to remove background (we handle it with <pre>)
+    const codeStyle = {
+        ...oneDark,
+        'pre[class*="language-"]': {
+            ...oneDark['pre[class*="language-"]'],
+            background: 'transparent',
+            margin: 0,
+            padding: 0,
+        },
+        'code[class*="language-"]': {
+            ...oneDark['code[class*="language-"]'],
+            background: 'transparent',
+        }
+    };
 
     if (loading) {
         return (
@@ -47,62 +65,117 @@ function DocPage() {
     const doc = data.getDocBySlugAndDocGroupId(docSlug, docGroup.id);
 
     return (
-        <div className="flex h-screen overflow-hidden">
+        <div className="flex min-h-screen">
             <Sidebar docset={docset} docGroups={docGroups} allDocs={allDocs} data={data} />
 
-            <main className="flex-1 overflow-y-auto overflow-x-hidden">
+            <main className="flex-1 min-w-0 overflow-x-hidden">
                 {doc?.content ? (
                     <div className="flex gap-8 p-8">
-                        <div className="prose flex-1 min-w-0">
-                            {doc.title && <h1 className="break-words">{doc.title}</h1>}
+                        <div className="flex-1 min-w-0 max-w-[65ch]">
+                            {doc.title && <h1 className="text-4xl font-black text-slate-900 dark:text-slate-50 mb-6 break-words">{doc.title}</h1>}
+
+                            {/* Mobile Navigation - Shows only on mobile */}
+                            <MobileSidebar docset={docset} docGroups={docGroups} data={data} />
+
+                            {/* Mobile TOC - Shows only on mobile */}
+                            <MobileTOC content={doc.content} />
                             <ReactMarkdown
                                 remarkPlugins={[remarkGfm]}
                                 components={{
                                     h2: ({ node, children }) => {
                                         const id = slugTracker.getUniqueSlug(children);
                                         console.log('[DocPage] h2 ID:', id, 'for text:', children);
-                                        return <h2 id={id} className="break-words">{children}</h2>;
+                                        return <h2 id={id} className="text-3xl font-extrabold text-slate-900 dark:text-slate-50 mt-12 mb-4 break-words">{children}</h2>;
                                     },
                                     h3: ({ node, children }) => {
                                         const id = slugTracker.getUniqueSlug(children);
-                                        return <h3 id={id} className="break-words">{children}</h3>;
+                                        return <h3 id={id} className="text-2xl font-bold text-slate-900 dark:text-slate-50 mt-8 mb-3 break-words">{children}</h3>;
                                     },
                                     h4: ({ node, children }) => {
                                         const id = slugTracker.getUniqueSlug(children);
-                                        return <h4 id={id} className="break-words">{children}</h4>;
+                                        return <h4 id={id} className="text-xl font-bold text-slate-900 dark:text-slate-50 mt-6 mb-2 break-words">{children}</h4>;
                                     },
                                     h5: ({ node, children }) => {
                                         const id = slugTracker.getUniqueSlug(children);
-                                        return <h5 id={id} className="break-words">{children}</h5>;
+                                        return <h5 id={id} className="text-lg font-semibold text-slate-900 dark:text-slate-50 mt-4 mb-2 break-words">{children}</h5>;
                                     },
                                     h6: ({ node, children }) => {
                                         const id = slugTracker.getUniqueSlug(children);
-                                        return <h6 id={id} className="break-words">{children}</h6>;
+                                        return <h6 id={id} className="text-base font-semibold text-slate-900 dark:text-slate-50 mt-4 mb-2 break-words">{children}</h6>;
                                     },
                                     p: ({ node, children }) => {
-                                        return <p className="break-words">{children}</p>;
+                                        return <p className="my-5 text-slate-900 dark:text-slate-50 leading-7 break-words">{children}</p>;
+                                    },
+                                    a: ({ node, children, href, ...props }) => {
+                                        return <a href={href} className="text-orange-600 hover:opacity-70 font-medium transition-opacity" {...props}>{children}</a>;
+                                    },
+                                    ul: ({ node, children }) => {
+                                        return <ul className="my-5 pl-7 list-disc text-slate-900 dark:text-slate-50">{children}</ul>;
+                                    },
+                                    ol: ({ node, children }) => {
+                                        return <ol className="my-5 pl-7 list-decimal text-slate-900 dark:text-slate-50">{children}</ol>;
+                                    },
+                                    li: ({ node, children }) => {
+                                        return <li className="my-2">{children}</li>;
+                                    },
+                                    strong: ({ node, children }) => {
+                                        return <strong className="font-semibold text-slate-900 dark:text-slate-50">{children}</strong>;
+                                    },
+                                    em: ({ node, children }) => {
+                                        return <em className="italic">{children}</em>;
+                                    },
+                                    blockquote: ({ node, children }) => {
+                                        return <blockquote className="border-l-4 border-slate-900 dark:border-slate-50 pl-4 my-6 italic text-slate-900 dark:text-slate-50">{children}</blockquote>;
                                     },
                                     pre: ({ node, children }) => {
-                                        return <pre className="overflow-x-auto">{children}</pre>;
+                                        return <pre className="bg-slate-900 text-slate-50 rounded-md p-4 my-6 overflow-x-auto">{children}</pre>;
                                     },
                                     code({ node, inline, className, children, ...props }) {
                                         const match = /language-(\w+)/.exec(className || '');
-                                        return !inline && match ? (
-                                            <div className="overflow-x-auto">
-                                                <SyntaxHighlighter
-                                                    style={oneDark}
-                                                    language={match[1]}
-                                                    PreTag="div"
-                                                    {...props}
-                                                >
-                                                    {String(children).replace(/\n$/, '')}
-                                                </SyntaxHighlighter>
-                                            </div>
-                                        ) : (
-                                            <code className={`${className} break-all`} {...props}>
+
+                                        if (!inline && match) {
+                                            const codeText = String(children).replace(/\n$/, '');
+                                            return (
+                                                <div className="relative overflow-x-auto my-6 bg-slate-900 rounded-md p-4">
+                                                    <CopyCodeButton code={codeText} />
+                                                    <SyntaxHighlighter
+                                                        style={codeStyle}
+                                                        language={match[1]}
+                                                        PreTag="div"
+                                                        {...props}
+                                                    >
+                                                        {codeText}
+                                                    </SyntaxHighlighter>
+                                                </div>
+                                            );
+                                        }
+
+                                        return (
+                                            <code className="text-orange-600 font-semibold text-sm bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded" {...props}>
                                                 {children}
                                             </code>
                                         );
+                                    },
+                                    hr: ({ node }) => {
+                                        return <hr className="my-8 border-slate-300 dark:border-slate-700" />;
+                                    },
+                                    table: ({ node, children }) => {
+                                        return <div className="overflow-x-auto my-6"><table className="min-w-full border border-slate-300 dark:border-slate-700">{children}</table></div>;
+                                    },
+                                    thead: ({ node, children }) => {
+                                        return <thead className="bg-slate-100 dark:bg-slate-800">{children}</thead>;
+                                    },
+                                    tbody: ({ node, children }) => {
+                                        return <tbody>{children}</tbody>;
+                                    },
+                                    tr: ({ node, children }) => {
+                                        return <tr className="border-b border-slate-300 dark:border-slate-700">{children}</tr>;
+                                    },
+                                    th: ({ node, children }) => {
+                                        return <th className="px-4 py-2 text-left font-semibold text-slate-900 dark:text-slate-50">{children}</th>;
+                                    },
+                                    td: ({ node, children }) => {
+                                        return <td className="px-4 py-2 text-slate-900 dark:text-slate-50">{children}</td>;
                                     }
                                 }}
                             >
@@ -110,7 +183,8 @@ function DocPage() {
                             </ReactMarkdown>
                         </div>
 
-                        <aside className="w-64 flex-shrink-0">
+                        {/* Desktop TOC - Hidden on mobile (below 768px) */}
+                        <aside className="w-64 flex-shrink-0 hidden md:block">
                             <TableOfContents content={doc.content} />
                         </aside>
                     </div>

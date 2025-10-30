@@ -1,10 +1,18 @@
 import { useState, useEffect } from '@wordpress/element';
-import { SlugTracker } from '../utils/slugify';
+import { SlugTracker, parseInlineMarkdown } from '../utils/slugify';
 
-function TableOfContents({ content }) {
+/**
+ * Custom hook to extract headings from markdown content
+ */
+export function useHeadings(content) {
     const [headings, setHeadings] = useState([]);
 
     useEffect(() => {
+        if (!content) {
+            setHeadings([]);
+            return;
+        }
+
         console.log('[TOC] Processing content, length:', content?.length);
 
         // Parse markdown content to extract headings
@@ -19,14 +27,17 @@ function TableOfContents({ content }) {
                 const level = match[1].length; // Number of # symbols
                 const text = match[2].trim();
 
-                // Create unique slug using shared utility
+                // Create unique slug using shared utility (strips markdown for clean ID)
                 const slug = slugTracker.getUniqueSlug(text);
+
+                // Parse inline markdown for display (keeps formatting)
+                const parsedText = parseInlineMarkdown(text);
 
                 console.log('[TOC] Found heading:', { level, text, slug });
 
                 extractedHeadings.push({
                     level,
-                    text,
+                    text: parsedText, // Store parsed parts for rendering
                     id: slug
                 });
             }
@@ -35,6 +46,12 @@ function TableOfContents({ content }) {
         console.log('[TOC] Total headings extracted:', extractedHeadings.length);
         setHeadings(extractedHeadings);
     }, [content]);
+
+    return headings;
+}
+
+function TableOfContents({ content }) {
+    const headings = useHeadings(content);
 
     if (headings.length === 0) {
         console.log('[TOC] No headings found, not rendering TOC');
@@ -77,7 +94,14 @@ function TableOfContents({ content }) {
                                     }
                                 }}
                             >
-                                {heading.text}
+                                {heading.text.map((part, idx) => {
+                                    if (typeof part === 'string') {
+                                        return part;
+                                    } else if (part.type === 'code') {
+                                        return <code key={idx} className="text-orange-600 text-xs px-1 py-0.5 rounded">{part.content}</code>;
+                                    }
+                                    return null;
+                                })}
                             </a>
                         </li>
                     );

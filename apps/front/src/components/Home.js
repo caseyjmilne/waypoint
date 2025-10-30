@@ -21,9 +21,9 @@ function Home() {
                 <div className="mt-6">
                     <DocSetsList docsets={data.docSets} />
 
-                    <div className="mt-12 pt-8 border-t border-slate-900 dark:border-slate-50 text-center">
+                    <div className="mt-12 pt-8 text-center">
                         <p className="text-lg font-semibold text-slate-900 dark:text-slate-50 mb-2">Powered by Waypoint</p>
-                        <p className="text-sm text-slate-900 dark:text-slate-50">Waypoint is an AI-powered documentation engine for WordPress.</p>
+                        <p className="text-sm text-slate-900 dark:text-slate-50 max-w-sm mx-auto">Waypoint is a documentation engine for WordPress. It is available at no extra cost to all Gateway license holders.</p>
                     </div>
                 </div>
             )}

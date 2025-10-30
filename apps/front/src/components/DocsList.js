@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { createExcerpt } from '../utils/markdown';
 
 function DocsList({ docs, docsetSlug, groupSlug }) {
     if (docs.length === 0) {
@@ -13,7 +14,7 @@ function DocsList({ docs, docsetSlug, groupSlug }) {
                         <h3 className="font-semibold text-orange-600 hover:opacity-70">{doc.title || 'Untitled'}</h3>
                         {doc.content && (
                             <p className="text-sm text-slate-900 dark:text-slate-50 mt-1 line-clamp-2">
-                                {doc.content.replace(/<[^>]*>/g, '').substring(0, 150)}...
+                                {createExcerpt(doc.content, 150)}
                             </p>
                         )}
                     </Link>

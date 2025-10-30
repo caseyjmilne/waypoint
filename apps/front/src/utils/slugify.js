@@ -58,6 +58,47 @@ export function createSlug(text) {
 }
 
 /**
+ * Parse inline markdown elements (like inline code) in heading text
+ * Converts markdown like "Text `code` more" to React elements
+ *
+ * @param {string} text - Markdown text to parse
+ * @returns {Array} - Array of strings and React elements
+ */
+export function parseInlineMarkdown(text) {
+    if (!text) return [text];
+
+    const parts = [];
+    let currentIndex = 0;
+
+    // Match inline code with backticks: `code`
+    const codeRegex = /`([^`]+)`/g;
+    let match;
+
+    while ((match = codeRegex.exec(text)) !== null) {
+        // Add text before the code
+        if (match.index > currentIndex) {
+            parts.push(text.substring(currentIndex, match.index));
+        }
+
+        // Add the code element (we'll let React create the element in the component)
+        parts.push({
+            type: 'code',
+            content: match[1]
+        });
+
+        currentIndex = match.index + match[0].length;
+    }
+
+    // Add remaining text after last match
+    if (currentIndex < text.length) {
+        parts.push(text.substring(currentIndex));
+    }
+
+    // If no matches found, return the original text
+    return parts.length === 0 ? [text] : parts;
+}
+
+/**
  * Manage slug uniqueness with a counter
  */
 export class SlugTracker {
