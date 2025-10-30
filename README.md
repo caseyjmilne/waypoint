@@ -49,31 +49,6 @@ Yes, you can create unlimited documentation sets and organize them into groups.
 1. Admin interface for managing documentation sets
 2. Frontend documentation display
 
-== Changelog ==
-
-= 1.1.1 =
-* Colors to match brand guidelines
-* Fixes minor UI issues with link lists
-
-= 1.1.0 =
-* Rebuilt for Gateway plugin with singular collections
-* Removed legacy admin pages and models
-* Migrated to Gateway Collection system
-* Streamlined architecture for better performance
-* Updated frontend build with latest dependencies
-
-= 1.0.1 =
-* Improved documentation layout
-* Fixed table of contents positioning
-* Enhanced sidebar navigation
-* Updated API routing
-
-= 1.0.0 =
-* Initial release
-* Multi-set documentation support
-* Custom admin pages
-* Frontend template system
-
 == Upgrade Notice ==
 
 = 1.1.0 =
