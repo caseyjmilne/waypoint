@@ -5,6 +5,23 @@ All notable changes to Waypoint will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.3] - 2025-10-31
+
+### Fixed
+- Fixed sticky table of contents positioning in documentation pages
+- Removed overflow-x-hidden that was interfering with sticky behavior
+- Added proper flex container alignment for sticky elements
+
+### Changed
+- Converted code block styling from Tailwind to BEM methodology
+- Disabled Tailwind preflight to prevent CSS reset conflicts
+- Code blocks now maintain dark background in both light and dark modes
+- Added subtle border to code blocks in dark mode only
+
+### Improved
+- Reduced CSS bundle size by ~40% by disabling preflight
+- Better syntax highlighting display with consistent dark backgrounds
+
 ## [1.1.0] - 2025-10-20
 
 ### Changed
