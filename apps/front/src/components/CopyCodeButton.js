@@ -4,13 +4,12 @@ import { useState } from '@wordpress/element';
  * CopyCodeButton Component
  *
  * Self-contained button for copying code to clipboard.
- * Designed to be easily extracted into a shared package.
+ * Uses BEM methodology for styling.
  *
  * @param {Object} props
  * @param {string} props.code - The code text to copy
- * @param {string} [props.className] - Optional additional CSS classes
  */
-function CopyCodeButton({ code, className = '' }) {
+function CopyCodeButton({ code }) {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = async () => {
@@ -23,27 +22,20 @@ function CopyCodeButton({ code, className = '' }) {
         }
     };
 
+    const buttonClass = copied
+        ? 'code-block-wrapper__button code-block-wrapper__button--copied'
+        : 'code-block-wrapper__button';
+
     return (
         <button
             onClick={handleCopy}
-            className={`
-                absolute top-2 right-2
-                px-3 py-1.5
-                text-xs font-medium
-                bg-slate-700 hover:bg-slate-600
-                text-slate-100
-                rounded
-                transition-all duration-200
-                border border-slate-600
-                ${copied ? 'bg-green-700 hover:bg-green-700' : ''}
-                ${className}
-            `.trim()}
+            className={buttonClass}
             aria-label={copied ? 'Copied to clipboard' : 'Copy code to clipboard'}
         >
             {copied ? (
-                <span className="flex items-center gap-1.5">
+                <span className="code-block-wrapper__button-content">
                     <svg
-                        className="w-3.5 h-3.5"
+                        className="code-block-wrapper__button-icon"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -58,9 +50,9 @@ function CopyCodeButton({ code, className = '' }) {
                     Copied!
                 </span>
             ) : (
-                <span className="flex items-center gap-1.5">
+                <span className="code-block-wrapper__button-content">
                     <svg
-                        className="w-3.5 h-3.5"
+                        className="code-block-wrapper__button-icon"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"

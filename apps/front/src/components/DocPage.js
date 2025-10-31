@@ -11,6 +11,7 @@ import TableOfContents from './TableOfContents';
 import MobileTOC from './MobileTOC';
 import CopyCodeButton from './CopyCodeButton';
 import { SlugTracker } from '../utils/slugify';
+import './CodeBlock.css';
 
 function DocPage() {
     const { docsetSlug, groupSlug, docSlug } = useParams();
@@ -65,10 +66,10 @@ function DocPage() {
     const doc = data.getDocBySlugAndDocGroupId(docSlug, docGroup.id);
 
     return (
-        <div className="flex min-h-screen">
+        <div className="flex min-h-screen items-start">
             <Sidebar docset={docset} docGroups={docGroups} allDocs={allDocs} data={data} />
 
-            <main className="flex-1 min-w-0 overflow-x-hidden">
+            <main className="flex-1 min-w-0">
                 {doc?.content ? (
                     <div className="flex gap-8 p-8">
                         <div className="flex-1 min-w-0 max-w-[65ch]">
@@ -128,7 +129,7 @@ function DocPage() {
                                         return <blockquote className="border-l-4 border-slate-900 dark:border-slate-50 pl-4 my-6 italic text-slate-900 dark:text-slate-50">{children}</blockquote>;
                                     },
                                     pre: ({ node, children }) => {
-                                        return <pre className="bg-slate-900 text-slate-50 rounded-md p-4 my-6 overflow-x-auto">{children}</pre>;
+                                        return <pre className="code-block">{children}</pre>;
                                     },
                                     code({ node, inline, className, children, ...props }) {
                                         const match = /language-(\w+)/.exec(className || '');
@@ -136,7 +137,7 @@ function DocPage() {
                                         if (!inline && match) {
                                             const codeText = String(children).replace(/\n$/, '');
                                             return (
-                                                <div className="relative overflow-x-auto my-6 bg-slate-900 rounded-md p-4">
+                                                <div className="code-block-wrapper">
                                                     <CopyCodeButton code={codeText} />
                                                     <SyntaxHighlighter
                                                         style={codeStyle}
@@ -151,7 +152,7 @@ function DocPage() {
                                         }
 
                                         return (
-                                            <code className="text-orange-600 font-semibold text-sm bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded" {...props}>
+                                            <code className="code-inline" {...props}>
                                                 {children}
                                             </code>
                                         );
@@ -184,9 +185,9 @@ function DocPage() {
                         </div>
 
                         {/* Desktop TOC - Hidden on mobile (below 768px) */}
-                        <aside className="w-64 flex-shrink-0 hidden md:block">
+                        <div className="w-64 flex-shrink-0 hidden md:block">
                             <TableOfContents content={doc.content} />
-                        </aside>
+                        </div>
                     </div>
                 ) : (
                     <p className="text-slate-900 dark:text-slate-50 p-8">No content available</p>

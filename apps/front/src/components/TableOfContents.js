@@ -58,7 +58,7 @@ function TableOfContents({ content }) {
         // Show a placeholder during development to confirm component is mounted
         if (process.env.NODE_ENV === 'development') {
             return (
-                <div className="border border-orange-600 rounded-lg p-4 sticky top-4 text-sm text-orange-600">
+                <div className="border border-orange-600 rounded-lg p-4 text-sm text-orange-600">
                     TOC: No h2-h6 headings found in content
                 </div>
             );
