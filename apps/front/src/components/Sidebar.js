@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
+import AdminEditLink from './AdminEditLink';
 
 function Sidebar({ docset, docGroups, allDocs, data }) {
     const { docsetSlug, groupSlug, docSlug } = useParams();
@@ -50,6 +51,22 @@ function Sidebar({ docset, docGroups, allDocs, data }) {
                     );
                 })}
             </nav>
+
+            {/* Admin Edit Links - Shows appropriate edit link based on current page */}
+            {docSlug && (() => {
+                const docGroup = data.getDocGroupBySlugAndDocSetId(groupSlug, docset.id);
+                const doc = docGroup ? data.getDocBySlugAndDocGroupId(docSlug, docGroup.id) : null;
+                return doc ? <AdminEditLink type="docs" id={doc.id} label="Edit Doc" /> : null;
+            })()}
+
+            {!docSlug && groupSlug && (() => {
+                const docGroup = data.getDocGroupBySlugAndDocSetId(groupSlug, docset.id);
+                return docGroup ? <AdminEditLink type="doc_groups" id={docGroup.id} label="Edit Doc Group" /> : null;
+            })()}
+
+            {!docSlug && !groupSlug && docset && (
+                <AdminEditLink type="doc_sets" id={docset.id} label="Edit Doc Set" />
+            )}
 
             <Link to="/" className="text-orange-600 hover:opacity-70 text-sm mt-8 inline-block">
                 &larr; All Documentation

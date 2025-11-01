@@ -29,6 +29,9 @@ wp_enqueue_script(
 wp_localize_script('waypoint-front', 'waypointData', [
     'apiUrl' => rest_url('gateway/v1'),
     'nonce' => wp_create_nonce('wp_rest'),
+    'isLoggedIn' => is_user_logged_in(),
+    'canManageDocs' => current_user_can('manage_options'),
+    'adminUrl' => admin_url('admin.php?page=gateway-collections'),
 ]);
 
 get_header();
